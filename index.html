@@ -1,1149 +1,527 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Apex Web Developers | Premium Websites for Local Businesses</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,500&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,500&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 tailwind.config = {
   theme: {
     extend: {
       colors: {
-        gold: { DEFAULT: '#cda349', light: '#f0d78c', dark: '#8a6c22' },
-        ink: { DEFAULT: '#0a0a0b', alt: '#111114', soft: '#17171b' }
+        gold: { DEFAULT:'#cda349', light:'#f0d78c', dark:'#8a6c22' },
+        ink: { DEFAULT:'#0a0a0b', alt:'#111114', soft:'#17171b' }
       },
       fontFamily: {
-        serif: ['"Playfair Display"', 'serif'],
-        sans: ['"Inter"', 'sans-serif']
+        serif: ['"Playfair Display"','serif'],
+        sans: ['"Inter"','sans-serif']
       }
     }
   }
 }
 </script>
 <style>
-  * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-  body {
-    background: #0a0a0b;
-    color: #f2f2f0;
-    font-family: 'Inter', sans-serif;
-    overflow-x: hidden;
-    cursor: default;
-  }
-  ::selection { background: #cda349; color: #0a0a0b; }
-  ::-webkit-scrollbar { width: 8px; }
-  ::-webkit-scrollbar-track { background: #0a0a0b; }
-  ::-webkit-scrollbar-thumb { background: #3a3428; border-radius: 10px; }
-  h1, h2, h3, .font-serif { font-family: 'Playfair Display', serif; }
-
-  /* Page transitions */
-  .page {
-    display: none;
-    opacity: 0;
-    transform: translateY(16px);
-    transition: opacity 0.55s cubic-bezier(.22,.68,0,1.01), transform 0.55s cubic-bezier(.22,.68,0,1.01);
-  }
-  .page.active {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  /* Reveal on scroll */
-  .reveal {
-    opacity: 0;
-    transform: translateY(36px);
-    transition: opacity 0.9s cubic-bezier(.22,.68,0,1.01), transform 0.9s cubic-bezier(.22,.68,0,1.01);
-  }
-  .reveal.in { opacity: 1; transform: translateY(0); }
-  .reveal-left {
-    opacity: 0;
-    transform: translateX(-40px);
-    transition: opacity 0.9s ease, transform 0.9s cubic-bezier(.22,.68,0,1.01);
-  }
-  .reveal-left.in { opacity: 1; transform: translateX(0); }
-  .reveal-right {
-    opacity: 0;
-    transform: translateX(40px);
-    transition: opacity 0.9s ease, transform 0.9s cubic-bezier(.22,.68,0,1.01);
-  }
-  .reveal-right.in { opacity: 1; transform: translateX(0); }
-  .reveal-scale {
-    opacity: 0;
-    transform: scale(0.92);
-    transition: opacity 0.8s ease, transform 0.8s cubic-bezier(.22,.68,0,1.01);
-  }
-  .reveal-scale.in { opacity: 1; transform: scale(1); }
-
-  /* Stagger helpers */
-  .d1 { transition-delay: .08s; }
-  .d2 { transition-delay: .16s; }
-  .d3 { transition-delay: .24s; }
-  .d4 { transition-delay: .32s; }
-  .d5 { transition-delay: .4s; }
-  .d6 { transition-delay: .48s; }
-
-  /* Gradient text */
-  .text-gold-grad {
-    background: linear-gradient(90deg, #f0d78c, #cda349 45%, #8a6c22);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
-
-  /* Glass */
-  .glass {
-    background: rgba(255,255,255,0.04);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    border: 1px solid rgba(255,255,255,0.08);
-  }
-  .glass-gold {
-    background: linear-gradient(145deg, rgba(205,163,73,0.08), rgba(255,255,255,0.02));
-    backdrop-filter: blur(18px);
-    border: 1px solid rgba(205,163,73,0.25);
-  }
-
-  /* Card hover glow */
-  .glow-card {
-    position: relative;
-    transition: transform 0.5s cubic-bezier(.22,.68,0,1.01), border-color 0.4s ease, box-shadow 0.5s ease;
-  }
-  .glow-card:hover {
-    transform: translateY(-8px);
-    border-color: rgba(205,163,73,0.5);
-    box-shadow: 0 25px 60px -20px rgba(205,163,73,0.25), 0 0 0 1px rgba(205,163,73,0.1);
-  }
-
-  /* Buttons */
-  .btn-gold {
-    position: relative;
-    overflow: hidden;
-    background: linear-gradient(90deg, #f0d78c, #cda349);
-    color: #0a0a0b;
-    font-weight: 600;
-    transition: transform 0.35s cubic-bezier(.22,.68,0,1.01), box-shadow 0.35s ease;
-  }
-  .btn-gold:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 15px 40px -10px rgba(205,163,73,0.55);
-  }
-  .btn-gold::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -120%;
-    width: 60%;
-    height: 100%;
-    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.6), transparent);
-    transform: skewX(-20deg);
-    transition: left 0.6s ease;
-  }
-  .btn-gold:hover::after { left: 130%; }
-
-  .btn-outline {
-    border: 1px solid rgba(205,163,73,0.5);
-    color: #f2f2f0;
-    transition: all 0.35s ease;
-    background: rgba(205,163,73,0.03);
-  }
-  .btn-outline:hover {
-    background: rgba(205,163,73,0.12);
-    border-color: #cda349;
-    transform: translateY(-3px);
-  }
-
-  /* Nav link underline */
-  .nav-link {
-    position: relative;
-  }
-  .nav-link::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    bottom: -6px;
-    width: 0;
-    height: 1px;
-    background: #cda349;
-    transition: width 0.35s ease;
-  }
-  .nav-link:hover::after, .nav-link.active::after { width: 100%; }
-  .nav-link.active { color: #f0d78c; }
-
-  /* Floating blob */
-  #blob {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 600px;
-    height: 600px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 30% 30%, rgba(205,163,73,0.35), rgba(205,163,73,0) 60%);
-    filter: blur(40px);
-    pointer-events: none;
-    z-index: 0;
-    will-change: transform;
-    transition: transform 0.1s linear;
-  }
-  #blob2 {
-    position: fixed;
-    bottom: 0;
-    right: 0;
-    width: 500px;
-    height: 500px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 60% 60%, rgba(255,255,255,0.06), rgba(255,255,255,0) 60%);
-    filter: blur(50px);
-    pointer-events: none;
-    z-index: 0;
-    will-change: transform;
-  }
-
-  /* 3D Animated Shape */
-  #shape3d {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    width: 360px;
-    height: 360px;
-    border-radius: 50%;
-    background: conic-gradient(from 0deg at 50% 50%, rgba(205,163,73,0.15), rgba(205,163,73,0) 30%, rgba(205,163,73,0.08) 60%, rgba(205,163,73,0) 80%);
-    filter: blur(60px);
-    pointer-events: none;
-    z-index: 0;
-    will-change: transform;
-    transform: translate(-50%, -50%) rotate(0deg);
-    animation: rotate3d 20s linear infinite;
-  }
-  @keyframes rotate3d {
-    from { transform: translate(-50%, -50%) rotate(0deg); }
-    to { transform: translate(-50%, -50%) rotate(360deg); }
-  }
-
-  /* Grid overlay */
-  .grid-overlay {
-    background-image: linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
-    background-size: 48px 48px;
-  }
-
-  /* Marquee */
-  .marquee-track {
-    display: flex;
-    width: max-content;
-    animation: marquee 28s linear infinite;
-  }
-  @keyframes marquee {
-    from { transform: translateX(0); }
-    to { transform: translateX(-50%); }
-  }
-
-  /* Word reveal */
-  .word {
-    display: inline-block;
-    opacity: 0;
-    transform: translateY(100%) rotate(2deg);
-    animation: wordUp 0.9s cubic-bezier(.22,.68,0,1.01) forwards;
-  }
-  @keyframes wordUp {
-    to { opacity: 1; transform: translateY(0) rotate(0); }
-  }
-
-  /* Pulsing dot */
-  .pulse-dot { position: relative; }
-  .pulse-dot::before {
-    content: '';
-    position: absolute;
-    inset: -4px;
-    border-radius: 999px;
-    border: 1px solid #cda349;
-    animation: pulse 2.2s ease-out infinite;
-  }
-  @keyframes pulse {
-    0% { transform: scale(0.8); opacity: 1; }
-    100% { transform: scale(1.8); opacity: 0; }
-  }
-
-  /* Counter */
-  .counter { font-variant-numeric: tabular-nums; }
-
-  /* Mobile menu */
-  #mobileMenu {
-    transform: translateY(-100%);
-    opacity: 0;
-    transition: transform 0.5s cubic-bezier(.22,.68,0,1.01), opacity 0.5s ease;
-  }
-  #mobileMenu.open {
-    transform: translateY(0);
-    opacity: 1;
-  }
-
-  /* Thumbnail patterns */
-  .thumb { position: relative; overflow: hidden; }
-  .thumb::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(160deg, rgba(205,163,73,0.18), rgba(0,0,0,0.65));
-    z-index: 1;
-  }
-  .thumb-emoji {
-    font-size: 4.2rem;
-    filter: drop-shadow(0 8px 20px rgba(0,0,0,.5));
-    transition: transform 0.6s cubic-bezier(.22,.68,0,1.01);
-  }
-  .glow-card:hover .thumb-emoji { transform: scale(1.15) rotate(-4deg); }
-
-  input, select, textarea {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.12);
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  }
-  input:focus, select:focus, textarea:focus {
-    outline: none;
-    border-color: #cda349;
-    box-shadow: 0 0 0 3px rgba(205,163,73,0.15);
-  }
-
-  /* Custom cursor */
-  @media (pointer: fine) {
-    #cursorDot, #cursorRing {
-      position: fixed;
-      top: 0; left: 0;
-      pointer-events: none;
-      z-index: 9999;
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-    }
-    #cursorDot { width: 6px; height: 6px; background: #cda349; }
-    #cursorRing {
-      width: 32px; height: 32px;
-      border: 1px solid rgba(205,163,73,0.5);
-      transition: width 0.25s ease, height 0.25s ease, border-color 0.25s ease;
-    }
-  }
-
-  .fade-line {
-    background: linear-gradient(90deg, transparent, rgba(205,163,73,0.6), transparent);
-    height: 1px;
-  }
-
-  .badge {
-    font-size: 11px;
-    letter-spacing: .18em;
-    text-transform: uppercase;
-    color: #f0d78c;
-  }
-
-  @keyframes floatY {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-14px); }
-  }
-  .float { animation: floatY 5s ease-in-out infinite; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { background:#0a0a0b; color:#f2f2f0; font-family:'Inter',sans-serif; overflow-x:hidden; cursor: default; }
+::selection{ background:#cda349; color:#0a0a0b; }
+::-webkit-scrollbar{ width:8px; }
+::-webkit-scrollbar-track{ background:#0a0a0b; }
+::-webkit-scrollbar-thumb{ background:#3a3428; border-radius:10px; }
+h1,h2,h3,.font-serif{ font-family:'Playfair Display',serif; }
+/* Page transitions */
+.page{ display:none; opacity:0; transform:translateY(16px); transition: opacity .55s cubic-bezier(.22,.68,0,1.01), transform .55s cubic-bezier(.22,.68,0,1.01); }
+.page.active{ opacity:1; transform:translateY(0); }
+/* Reveal on scroll */
+.reveal{ opacity:0; transform:translateY(36px); transition: opacity .9s cubic-bezier(.22,.68,0,1.01), transform .9s cubic-bezier(.22,.68,0,1.01); }
+.reveal.in{ opacity:1; transform:translateY(0); }
+.reveal-left{ opacity:0; transform:translateX(-40px); transition: opacity .9s ease, transform .9s cubic-bezier(.22,.68,0,1.01); }
+.reveal-left.in{ opacity:1; transform:translateX(0); }
+.reveal-right{ opacity:0; transform:translateX(40px); transition: opacity .9s ease, transform .9s cubic-bezier(.22,.68,0,1.01); }
+.reveal-right.in{ opacity:1; transform:translateX(0); }
+.reveal-scale{ opacity:0; transform:scale(.92); transition: opacity .8s ease, transform .8s cubic-bezier(.22,.68,0,1.01); }
+.reveal-scale.in{ opacity:1; transform:scale(1); }
+.d1{transition-delay:.08s} .d2{transition-delay:.16s} .d3{transition-delay:.24s} .d4{transition-delay:.32s} .d5{transition-delay:.4s} .d6{transition-delay:.48s}
+/* gradient text */
+.text-gold-grad{ background: linear-gradient(90deg,#f0d78c,#cda349 45%,#8a6c22); -webkit-background-clip:text; background-clip:text; color:transparent; }
+/* glass */
+.glass{ background: rgba(255,255,255,0.04); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border: 1px solid rgba(255,255,255,0.08); }
+.glass-gold{ background: linear-gradient(145deg, rgba(205,163,73,0.08), rgba(255,255,255,0.02)); backdrop-filter: blur(18px); border: 1px solid rgba(205,163,73,0.25); }
+/* card hover glow */
+.glow-card{ position:relative; transition: transform .5s cubic-bezier(.22,.68,0,1.01), border-color .4s ease, box-shadow .5s ease; }
+.glow-card:hover{ transform: translateY(-8px); border-color: rgba(205,163,73,0.5); box-shadow: 0 25px 60px -20px rgba(205,163,73,0.25), 0 0 0 1px rgba(205,163,73,0.1); }
+/* buttons */
+.btn-gold{ position:relative; overflow:hidden; background: linear-gradient(90deg,#f0d78c,#cda349); color:#0a0a0b; font-weight:600; transition: transform .35s cubic-bezier(.22,.68,0,1.01), box-shadow .35s ease; }
+.btn-gold:hover{ transform:translateY(-3px); box-shadow: 0 15px 40px -10px rgba(205,163,73,0.55); }
+.btn-gold::after{ content:''; position:absolute; top:0; left:-120%; width:60%; height:100%; background: linear-gradient(120deg, transparent, rgba(255,255,255,0.6), transparent); transform: skewX(-20deg); transition: left .6s ease; }
+.btn-gold:hover::after{ left:130%; }
+.btn-outline{ border:1px solid rgba(205,163,73,0.5); color:#f2f2f0; transition: all .35s ease; background: rgba(205,163,73,0.03); }
+.btn-outline:hover{ background: rgba(205,163,73,0.12); border-color:#cda349; transform:translateY(-3px); }
+/* nav link underline */
+.nav-link{ position:relative; }
+.nav-link::after{ content:''; position:absolute; left:0; bottom:-6px; width:0; height:1px; background:#cda349; transition: width .35s ease; }
+.nav-link:hover::after, .nav-link.active::after{ width:100%; }
+.nav-link.active{ color:#f0d78c; }
+/* floating blob */
+#blob{ position:fixed; top:0; left:0; width:600px; height:600px; border-radius:50%; background: radial-gradient(circle at 30% 30%, rgba(205,163,73,0.35), rgba(205,163,73,0) 60%); filter: blur(40px); pointer-events:none; z-index:0; will-change:transform; transition: transform .1s linear; }
+#blob2{ position:fixed; bottom:0; right:0; width:500px; height:500px; border-radius:50%; background: radial-gradient(circle at 60% 60%, rgba(255,255,255,0.06), rgba(255,255,255,0) 60%); filter: blur(50px); pointer-events:none; z-index:0; will-change:transform; }
+/* grid overlay */
+.grid-overlay{ background-image: linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px); background-size: 48px 48px; }
+/* marquee */
+.marquee-track{ display:flex; width:max-content; animation: marquee 28s linear infinite; }
+@keyframes marquee{ from{transform:translateX(0)} to{transform:translateX(-50%)} }
+/* text reveal words */
+.word{ display:inline-block; opacity:0; transform:translateY(100%) rotate(2deg); animation: wordUp .9s cubic-bezier(.22,.68,0,1.01) forwards; }
+@keyframes wordUp{ to{ opacity:1; transform:translateY(0) rotate(0); } }
+/* pulsing dot */
+.pulse-dot{ position:relative; }
+.pulse-dot::before{ content:''; position:absolute; inset:-4px; border-radius:999px; border:1px solid #cda349; animation: pulse 2.2s ease-out infinite; }
+@keyframes pulse{ 0%{ transform:scale(.8); opacity:1;} 100%{ transform:scale(1.8); opacity:0;} }
+/* number ticking */
+.counter{ font-variant-numeric: tabular-nums; }
+/* mobile menu */
+#mobileMenu{ transform: translateY(-100%); opacity:0; transition: transform .5s cubic-bezier(.22,.68,0,1.01), opacity .5s ease; }
+#mobileMenu.open{ transform: translateY(0); opacity:1; }
+/* thumbnail patterns */
+.thumb{ position:relative; overflow:hidden; }
+.thumb::before{ content:''; position:absolute; inset:0; background: linear-gradient(160deg, rgba(205,163,73,0.18), rgba(0,0,0,0.65)); z-index:1; }
+.thumb-emoji{ font-size:4.2rem; filter: drop-shadow(0 8px 20px rgba(0,0,0,.5)); transition: transform .6s cubic-bezier(.22,.68,0,1.01); }
+.glow-card:hover .thumb-emoji{ transform: scale(1.15) rotate(-4deg); }
+input, select, textarea{ background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.12); transition: border-color .3s ease, box-shadow .3s ease; }
+input:focus, select:focus, textarea:focus{ outline:none; border-color:#cda349; box-shadow: 0 0 0 3px rgba(205,163,73,0.15); }
+/* custom cursor */
+@media (pointer:fine){ #cursorDot, #cursorRing{ position:fixed; top:0; left:0; pointer-events:none; z-index:9999; border-radius:50%; transform:translate(-50%,-50%); } #cursorDot{ width:6px; height:6px; background:#cda349; } #cursorRing{ width:32px; height:32px; border:1px solid rgba(205,163,73,0.5); transition: width .25s ease, height .25s ease, border-color .25s ease; } }
+.fade-line{ background: linear-gradient(90deg, transparent, rgba(205,163,73,0.6), transparent); height:1px; }
+.badge{ font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:#f0d78c; }
+@keyframes floatY{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px)} }
+.float{ animation: floatY 5s ease-in-out infinite; }
+/* 3D Canvas Container */
+#three-container { position: absolute; top: 0; right: 0; width: 45%; height: 100%; z-index: 1; opacity: 0.65; pointer-events: none; }
 </style>
 </head>
 <body class="antialiased">
-
-<!-- Animated Background Elements -->
 <div id="blob"></div>
 <div id="blob2"></div>
-<div id="shape3d"></div>
-
-<!-- Custom Cursor -->
 <div id="cursorDot"></div>
 <div id="cursorRing"></div>
 
 <!-- NAV -->
 <nav id="navbar" class="fixed top-0 left-0 w-full z-50 transition-all duration-500">
   <div class="max-w-7xl mx-auto px-6 lg:px-10 flex items-center justify-between py-5">
-    <a href="#" onclick="goToPage('home'); return false;" class="flex items-center gap-2 group">
+    <a href="#" onclick="goToPage('home');return false;" class="flex items-center gap-2 group">
       <span class="text-2xl font-serif font-bold tracking-wide text-gold-grad">APEX</span>
       <span class="hidden sm:block text-[10px] tracking-[0.3em] text-white/50 uppercase mt-1">Web Developers</span>
     </a>
     <div class="hidden lg:flex items-center gap-10 text-sm text-white/70">
-      <a href="#" data-page="home" class="nav-link active" onclick="goToPage('home'); return false;">Home</a>
-      <a href="#" data-page="services" class="nav-link" onclick="goToPage('services'); return false;">Services</a>
-      <a href="#" data-page="portfolio" class="nav-link" onclick="goToPage('portfolio'); return false;">Portfolio</a>
-      <a href="#" data-page="pricing" class="nav-link" onclick="goToPage('pricing'); return false;">Pricing</a>
-      <a href="#" data-page="about" class="nav-link" onclick="goToPage('about'); return false;">About</a>
-      <a href="#" data-page="contact" class="nav-link" onclick="goToPage('contact'); return false;">Contact</a>
+      <a href="#" data-page="home" class="nav-link active" onclick="goToPage('home');return false;">Home</a>
+      <a href="#" data-page="services" class="nav-link" onclick="goToPage('services');return false;">Services</a>
+      <a href="#" data-page="portfolio" class="nav-link" onclick="goToPage('portfolio');return false;">Portfolio</a>
+      <a href="#" data-page="pricing" class="nav-link" onclick="goToPage('pricing');return false;">Pricing</a>
+      <a href="#" data-page="about" class="nav-link" onclick="goToPage('about');return false;">About</a>
+      <a href="#" data-page="contact" class="nav-link" onclick="goToPage('contact');return false;">Contact</a>
     </div>
     <div class="hidden lg:block">
       <button onclick="goToPage('contact')" class="btn-gold px-6 py-2.5 rounded-full text-sm">Get Your Website</button>
     </div>
-    <button id="menuBtn" class="lg:hidden text-white" onclick="toggleMenu()" aria-label="Toggle menu">
-      <svg id="iconMenu" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-        <line x1="3" y1="6" x2="21" y2="6"/>
-        <line x1="3" y1="12" x2="21" y2="12"/>
-        <line x1="3" y1="18" x2="21" y2="18"/>
-      </svg>
+    <button id="menuBtn" class="lg:hidden text-white" onclick="toggleMenu()">
+      <svg id="iconMenu" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
     </button>
   </div>
   <div id="mobileMenu" class="lg:hidden glass mx-4 rounded-2xl px-6 py-6 flex flex-col gap-5 text-white/80">
-    <a href="#" onclick="goToPage('home'); toggleMenu(); return false;">Home</a>
-    <a href="#" onclick="goToPage('services'); toggleMenu(); return false;">Services</a>
-    <a href="#" onclick="goToPage('portfolio'); toggleMenu(); return false;">Portfolio</a>
-    <a href="#" onclick="goToPage('pricing'); toggleMenu(); return false;">Pricing</a>
-    <a href="#" onclick="goToPage('about'); toggleMenu(); return false;">About</a>
-    <a href="#" onclick="goToPage('contact'); toggleMenu(); return false;">Contact</a>
-    <button onclick="goToPage('contact'); toggleMenu();" class="btn-gold px-6 py-3 rounded-full text-sm mt-2">Get Your Website</button>
+    <a href="#" onclick="goToPage('home');toggleMenu();return false;">Home</a>
+    <a href="#" onclick="goToPage('services');toggleMenu();return false;">Services</a>
+    <a href="#" onclick="goToPage('portfolio');toggleMenu();return false;">Portfolio</a>
+    <a href="#" onclick="goToPage('pricing');toggleMenu();return false;">Pricing</a>
+    <a href="#" onclick="goToPage('about');toggleMenu();return false;">About</a>
+    <a href="#" onclick="goToPage('contact');toggleMenu();return false;">Contact</a>
+    <button onclick="goToPage('contact');toggleMenu();" class="btn-gold px-6 py-3 rounded-full text-sm mt-2">Get Your Website</button>
   </div>
 </nav>
 
 <main id="app" class="relative z-10">
-
-<!-- =========================================================== -->
-<!-- HOME PAGE -->
-<!-- =========================================================== -->
-<section id="page-home" class="page active" style="display:block;">
-  <!-- HERO -->
-  <section class="relative min-h-screen flex items-center grid-overlay pt-32 pb-20 overflow-hidden">
-    <div class="max-w-7xl mx-auto px-6 lg:px-10 w-full grid lg:grid-cols-12 gap-10 items-center">
-      <div class="lg:col-span-7">
-        <div class="flex items-center gap-3 mb-6 reveal in">
-          <span class="pulse-dot w-2 h-2 rounded-full bg-gold"></span>
-          <span class="badge">Premium Web Design Studio</span>
-        </div>
-        <h1 class="text-[2.6rem] sm:text-6xl lg:text-7xl font-serif font-bold leading-[1.05] mb-8">
-          <span class="block overflow-hidden"><span class="word" style="animation-delay:.05s">Websites</span> <span class="word" style="animation-delay:.15s">Built</span> <span class="word" style="animation-delay:.25s">to</span></span>
-          <span class="block overflow-hidden"><span class="word text-gold-grad" style="animation-delay:.35s">Put</span> <span class="word text-gold-grad" style="animation-delay:.45s">Your</span> <span class="word text-gold-grad" style="animation-delay:.55s">Business</span></span>
-          <span class="block overflow-hidden"><span class="word" style="animation-delay:.65s">Ahead.</span></span>
-        </h1>
-        <p class="text-white/60 text-lg max-w-xl mb-10 reveal in d3">Premium websites designed to make local businesses look better, build trust, and turn visitors into customers.</p>
-        <div class="flex flex-wrap gap-4 reveal in d4">
-          <button onclick="goToPage('portfolio')" class="btn-outline px-8 py-4 rounded-full font-medium">View Our Work</button>
-          <button onclick="goToPage('contact')" class="btn-gold px-8 py-4 rounded-full font-medium">Get Your Website</button>
-        </div>
-        <div class="flex gap-10 mt-16 reveal in d5">
-          <div>
-            <div class="text-3xl font-serif text-gold-grad counter" data-target="50">0</div>
-            <div class="text-xs text-white/50 uppercase tracking-widest mt-1">Projects Delivered</div>
+  <!-- HOME PAGE -->
+  <section id="page-home" class="page active" style="display:block;">
+    <!-- HERO -->
+    <section class="relative min-h-screen flex items-center grid-overlay pt-32 pb-20 overflow-hidden">
+      <!-- 3D Background -->
+      <div id="three-container"></div>
+      
+      <div class="max-w-7xl mx-auto px-6 lg:px-10 w-full grid lg:grid-cols-12 gap-10 items-center relative z-10">
+        <div class="lg:col-span-7">
+          <div class="flex items-center gap-3 mb-6 reveal in">
+            <span class="pulse-dot w-2 h-2 rounded-full bg-gold"></span>
+            <span class="badge">Premium Web Design Studio</span>
           </div>
-          <div>
-            <div class="text-3xl font-serif text-gold-grad"><span class="counter" data-target="100">0</span>%</div>
-            <div class="text-xs text-white/50 uppercase tracking-widest mt-1">Mobile Responsive</div>
+          <h1 class="text-[2.6rem] sm:text-6xl lg:text-7xl font-serif font-bold leading-[1.05] mb-8">
+            <span class="block overflow-hidden"><span class="word" style="animation-delay:.05s">Websites</span> <span class="word" style="animation-delay:.15s">Built</span> <span class="word" style="animation-delay:.25s">to</span></span>
+            <span class="block overflow-hidden"><span class="word text-gold-grad" style="animation-delay:.35s">Put</span> <span class="word text-gold-grad" style="animation-delay:.45s">Your</span> <span class="word text-gold-grad" style="animation-delay:.55s">Business</span></span>
+            <span class="block overflow-hidden"><span class="word" style="animation-delay:.65s">Ahead.</span></span>
+          </h1>
+          <p class="text-white/60 text-lg max-w-xl mb-10 reveal in d3">Premium websites designed to make local businesses look better, build trust, and turn visitors into customers.</p>
+          <div class="flex flex-wrap gap-4 reveal in d4">
+            <button onclick="goToPage('portfolio')" class="btn-outline px-8 py-4 rounded-full font-medium">View Our Work</button>
+            <button onclick="goToPage('contact')" class="btn-gold px-8 py-4 rounded-full font-medium">Get Your Website</button>
           </div>
-          <div>
-            <div class="text-3xl font-serif text-gold-grad"><span class="counter" data-target="5">0</span>.0★</div>
-            <div class="text-xs text-white/50 uppercase tracking-widest mt-1">Client Rating</div>
+          <div class="flex gap-10 mt-16 reveal in d5">
+            <div><div class="text-3xl font-serif text-gold-grad counter" data-target="50">0</div><div class="text-xs text-white/50 uppercase tracking-widest mt-1">Projects Delivered</div></div>
+            <div><div class="text-3xl font-serif text-gold-grad"><span class="counter" data-target="100">0</span>%</div><div class="text-xs text-white/50 uppercase tracking-widest mt-1">Mobile Responsive</div></div>
+            <div><div class="text-3xl font-serif text-gold-grad"><span class="counter" data-target="5">0</span>.0★</div><div class="text-xs text-white/50 uppercase tracking-widest mt-1">Client Rating</div></div>
           </div>
         </div>
       </div>
-      <div class="lg:col-span-5 relative reveal-scale in">
-        <div class="relative float">
-          <div class="glass-gold rounded-3xl p-6 shadow-2xl">
-            <div class="rounded-2xl bg-gradient-to-br from-ink-alt to-black h-72 flex items-center justify-center relative overflow-hidden thumb">
-              <span class="thumb-emoji z-10">✂️</span>
-            </div>
-            <div class="mt-5 flex items-center justify-between">
-              <div>
-                <div class="font-serif text-lg">Luxe Hair Studio</div>
-                <div class="text-xs text-white/50">Salon Website Redesign</div>
-              </div>
-              <span class="text-xs px-3 py-1 rounded-full border border-gold/40 text-gold-light">Live</span>
-            </div>
+      <div class="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/30 text-xs tracking-widest uppercase">Scroll</div>
+    </section>
+
+    <!-- MARQUEE -->
+    <div class="border-y border-white/10 py-6 overflow-hidden bg-white/[0.02]">
+      <div class="marquee-track text-white/30 text-sm tracking-[0.3em] uppercase gap-16 flex">
+        <div class="flex gap-16 pr-16"><span>Salons</span><span>•</span><span>Barbershops</span><span>•</span><span>Restaurants</span><span>•</span><span>Contractors</span><span>•</span><span>Auto Shops</span><span>•</span><span>Local Businesses</span><span>•</span></div>
+        <div class="flex gap-16 pr-16"><span>Salons</span><span>•</span><span>Barbershops</span><span>•</span><span>Restaurants</span><span>•</span><span>Contractors</span><span>•</span><span>Auto Shops</span><span>•</span><span>Local Businesses</span><span>•</span></div>
+      </div>
+    </div>
+
+    <!-- SERVICES PREVIEW -->
+    <section class="max-w-7xl mx-auto px-6 lg:px-10 py-28">
+      <div class="text-center max-w-2xl mx-auto mb-16 reveal">
+        <span class="badge">What We Do</span>
+        <h2 class="text-4xl lg:text-5xl font-serif font-bold mt-4">Crafted for Growth</h2>
+        <p class="text-white/50 mt-4">Every project is engineered to look premium and convert visitors into paying customers.</p>
+      </div>
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="glass rounded-2xl p-8 glow-card reveal">
+          <div class="w-12 h-12 rounded-xl bg-gold/10 flex items-center justify-center mb-6 text-gold-light">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/></svg>
           </div>
-          <div class="absolute -bottom-8 -left-8 glass rounded-2xl px-5 py-4 shadow-xl hidden sm:block">
-            <div class="text-xs text-white/50">Bookings Increase</div>
-            <div class="text-2xl font-serif text-gold-grad">+64%</div>
+          <h3 class="text-xl font-serif mb-3">Custom Website Design</h3>
+          <p class="text-white/50 text-sm leading-relaxed">Bespoke visuals built around your brand — never a generic template.</p>
+        </div>
+        <div class="glass rounded-2xl p-8 glow-card reveal d2">
+          <div class="w-12 h-12 rounded-xl bg-gold/10 flex items-center justify-center mb-6 text-gold-light">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 5l-6 7 6 7M16 5l6 7-6 7"/></svg>
           </div>
+          <h3 class="text-xl font-serif mb-3">Website Development</h3>
+          <p class="text-white/50 text-sm leading-relaxed">Fast, secure, and built on modern code that scales with your business.</p>
         </div>
-      </div>
-    </div>
-    <div class="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/30 text-xs tracking-widest uppercase">Scroll</div>
-  </section>
-
-  <!-- MARQUEE -->
-  <div class="border-y border-white/10 py-6 overflow-hidden bg-white/[0.02]">
-    <div class="marquee-track text-white/30 text-sm tracking-[0.3em] uppercase gap-16 flex">
-      <div class="flex gap-16 pr-16">
-        <span>Salons</span><span>•</span><span>Barbershops</span><span>•</span><span>Restaurants</span><span>•</span><span>Contractors</span><span>•</span><span>Auto Shops</span><span>•</span><span>Local Businesses</span><span>•</span>
-      </div>
-      <div class="flex gap-16 pr-16">
-        <span>Salons</span><span>•</span><span>Barbershops</span><span>•</span><span>Restaurants</span><span>•</span><span>Contractors</span><span>•</span><span>Auto Shops</span><span>•</span><span>Local Businesses</span><span>•</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- SERVICES PREVIEW -->
-  <section class="max-w-7xl mx-auto px-6 lg:px-10 py-28">
-    <div class="text-center max-w-2xl mx-auto mb-16 reveal">
-      <span class="badge">What We Do</span>
-      <h2 class="text-4xl lg:text-5xl font-serif font-bold mt-4">Crafted for Growth</h2>
-      <p class="text-white/50 mt-4">Every project is engineered to look premium and convert visitors into paying customers.</p>
-    </div>
-    <div class="grid md:grid-cols-3 gap-6">
-      <div class="glass rounded-2xl p-8 glow-card reveal">
-        <div class="w-12 h-12 rounded-xl bg-gold/10 flex items-center justify-center mb-6 text-gold-light">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/></svg>
-        </div>
-        <h3 class="text-xl font-serif mb-3">Custom Website Design</h3>
-        <p class="text-white/50 text-sm leading-relaxed">Bespoke visuals built around your brand — never a generic template.</p>
-      </div>
-      <div class="glass rounded-2xl p-8 glow-card reveal d2">
-        <div class="w-12 h-12 rounded-xl bg-gold/10 flex items-center justify-center mb-6 text-gold-light">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 5l-6 7 6 7M16 5l6 7-6 7"/></svg>
-        </div>
-        <h3 class="text-xl font-serif mb-3">Website Development</h3>
-        <p class="text-white/50 text-sm leading-relaxed">Fast, secure, and built on modern code that scales with your business.</p>
-      </div>
-      <div class="glass rounded-2xl p-8 glow-card reveal d3">
-        <div class="w-12 h-12 rounded-xl bg-gold/10 flex items-center justify-center mb-6 text-gold-light">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
-        </div>
-        <h3 class="text-xl font-serif mb-3">Mobile Optimization</h3>
-        <p class="text-white/50 text-sm leading-relaxed">Flawless on every screen — because most of your customers are on mobile.</p>
-      </div>
-    </div>
-    <div class="text-center mt-12 reveal">
-      <button onclick="goToPage('services')" class="btn-outline px-8 py-3.5 rounded-full">Explore All Services</button>
-    </div>
-  </section>
-
-  <!-- PORTFOLIO PREVIEW -->
-  <section class="max-w-7xl mx-auto px-6 lg:px-10 py-20">
-    <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-14 gap-4 reveal">
-      <div>
-        <span class="badge">Selected Work</span>
-        <h2 class="text-4xl lg:text-5xl font-serif font-bold mt-4">Recent Projects</h2>
-      </div>
-      <button onclick="goToPage('portfolio')" class="btn-outline px-7 py-3 rounded-full text-sm w-max">View Full Portfolio</button>
-    </div>
-    <div class="grid md:grid-cols-3 gap-6">
-      <div class="rounded-2xl overflow-hidden glass glow-card reveal">
-        <div class="thumb h-56 bg-gradient-to-br from-[#2b2210] to-black flex items-center justify-center"><span class="thumb-emoji z-10">🍝</span></div>
-        <div class="p-6">
-          <div class="text-xs text-gold-light uppercase tracking-widest mb-1">Restaurant</div>
-          <h3 class="font-serif text-lg">Bella Vista Ristorante</h3>
-        </div>
-      </div>
-      <div class="rounded-2xl overflow-hidden glass glow-card reveal d2">
-        <div class="thumb h-56 bg-gradient-to-br from-[#1e1e22] to-black flex items-center justify-center"><span class="thumb-emoji z-10">💈</span></div>
-        <div class="p-6">
-          <div class="text-xs text-gold-light uppercase tracking-widest mb-1">Barbershop</div>
-          <h3 class="font-serif text-lg">The Fade Room</h3>
-        </div>
-      </div>
-      <div class="rounded-2xl overflow-hidden glass glow-card reveal d3">
-        <div class="thumb h-56 bg-gradient-to-br from-[#241a10] to-black flex items-center justify-center"><span class="thumb-emoji z-10">🚗</span></div>
-        <div class="p-6">
-          <div class="text-xs text-gold-light uppercase tracking-widest mb-1">Auto Detailing</div>
-          <h3 class="font-serif text-lg">Velocity Auto Detailing</h3>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- WHY APEX -->
-  <section class="max-w-7xl mx-auto px-6 lg:px-10 py-28 grid lg:grid-cols-2 gap-16 items-center">
-    <div class="reveal-left">
-      <span class="badge">Why Apex</span>
-      <h2 class="text-4xl lg:text-5xl font-serif font-bold mt-4 mb-8 leading-tight">We Build Trust <span class="text-gold-grad">Before</span> a Word Is Spoken</h2>
-      <div class="space-y-6">
-        <div class="flex gap-4">
-          <div class="w-9 h-9 rounded-full border border-gold/40 flex items-center justify-center text-gold-light shrink-0">01</div>
-          <div>
-            <h4 class="font-medium mb-1">Designed to Convert</h4>
-            <p class="text-white/50 text-sm">Every layout is built with one goal: turning visitors into paying customers.</p>
+        <div class="glass rounded-2xl p-8 glow-card reveal d3">
+          <div class="w-12 h-12 rounded-xl bg-gold/10 flex items-center justify-center mb-6 text-gold-light">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
           </div>
-        </div>
-        <div class="flex gap-4">
-          <div class="w-9 h-9 rounded-full border border-gold/40 flex items-center justify-center text-gold-light shrink-0">02</div>
-          <div>
-            <h4 class="font-medium mb-1">Premium Craftsmanship</h4>
-            <p class="text-white/50 text-sm">No drag-and-drop templates — every site is custom coded and polished.</p>
-          </div>
-        </div>
-        <div class="flex gap-4">
-          <div class="w-9 h-9 rounded-full border border-gold/40 flex items-center justify-center text-gold-light shrink-0">03</div>
-          <div>
-            <h4 class="font-medium mb-1">Built for Local Business</h4>
-            <p class="text-white/50 text-sm">We specialize in salons, restaurants, contractors and auto shops — we know what works.</p>
-          </div>
+          <h3 class="text-xl font-serif mb-3">Mobile Optimization</h3>
+          <p class="text-white/50 text-sm leading-relaxed">Flawless on every screen — because most of your customers are on mobile.</p>
         </div>
       </div>
-    </div>
-    <div class="reveal-right relative">
-      <div class="glass-gold rounded-3xl p-10 relative overflow-hidden">
-        <div class="fade-line w-full mb-8"></div>
-        <div class="grid grid-cols-2 gap-8">
-          <div>
-            <div class="text-4xl font-serif text-gold-grad counter" data-target="94">0</div>
-            <div class="text-xs text-white/50 uppercase tracking-widest mt-2">% More Inquiries</div>
-          </div>
-          <div>
-            <div class="text-4xl font-serif text-gold-grad counter" data-target="7">0</div>
-            <div class="text-xs text-white/50 uppercase tracking-widest mt-2">Day Avg. Delivery</div>
-          </div>
-          <div>
-            <div class="text-4xl font-serif text-gold-grad counter" data-target="100">0</div>
-            <div class="text-xs text-white/50 uppercase tracking-widest mt-2">% Custom Built</div>
-          </div>
-          <div>
-            <div class="text-4xl font-serif text-gold-grad counter" data-target="24">0</div>
-            <div class="text-xs text-white/50 uppercase tracking-widest mt-2">Hr Support Reply</div>
-          </div>
-        </div>
-        <div class="fade-line w-full mt-8"></div>
+      <div class="text-center mt-12 reveal">
+        <button onclick="goToPage('services')" class="btn-outline px-8 py-3.5 rounded-full">Explore All Services</button>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- PROCESS -->
-  <section class="max-w-7xl mx-auto px-6 lg:px-10 py-28">
-    <div class="text-center max-w-2xl mx-auto mb-20 reveal">
-      <span class="badge">Our Process</span>
-      <h2 class="text-4xl lg:text-5xl font-serif font-bold mt-4">From Idea to Launch</h2>
-    </div>
-    <div class="grid md:grid-cols-4 gap-8 relative">
-      <div class="hidden md:block absolute top-9 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent"></div>
-      <div class="reveal text-center relative">
-        <div class="w-16 h-16 mx-auto rounded-full glass-gold flex items-center justify-center font-serif text-xl mb-6 relative z-10">01</div>
-        <h4 class="font-medium mb-2">Discover</h4>
-        <p class="text-white/50 text-sm">We learn your business, your goals, and your customers.</p>
+    <!-- PORTFOLIO PREVIEW -->
+    <section class="max-w-7xl mx-auto px-6 lg:px-10 py-20">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-14 gap-4 reveal">
+        <div><span class="badge">Selected Work</span><h2 class="text-4xl lg:text-5xl font-serif font-bold mt-4">Recent Projects</h2></div>
+        <button onclick="goToPage('portfolio')" class="btn-outline px-7 py-3 rounded-full text-sm w-max">View Full Portfolio</button>
       </div>
-      <div class="reveal d2 text-center relative">
-        <div class="w-16 h-16 mx-auto rounded-full glass-gold flex items-center justify-center font-serif text-xl mb-6 relative z-10">02</div>
-        <h4 class="font-medium mb-2">Design</h4>
-        <p class="text-white/50 text-sm">We craft a custom visual identity built to impress.</p>
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="rounded-2xl overflow-hidden glass glow-card reveal">
+          <div class="thumb h-56 bg-gradient-to-br from-[#2b2210] to-black flex items-center justify-center"><span class="thumb-emoji z-10">🍝</span></div>
+          <div class="p-6"><div class="text-xs text-gold-light uppercase tracking-widest mb-1">Restaurant</div><h3 class="font-serif text-lg">Bella Vista Ristorante</h3></div>
+        </div>
+        <div class="rounded-2xl overflow-hidden glass glow-card reveal d2">
+          <div class="thumb h-56 bg-gradient-to-br from-[#1e1e22] to-black flex items-center justify-center"><span class="thumb-emoji z-10">💈</span></div>
+          <div class="p-6"><div class="text-xs text-gold-light uppercase tracking-widest mb-1">Barbershop</div><h3 class="font-serif text-lg">The Fade Room</h3></div>
+        </div>
+        <div class="rounded-2xl overflow-hidden glass glow-card reveal d3">
+          <div class="thumb h-56 bg-gradient-to-br from-[#241a10] to-black flex items-center justify-center"><span class="thumb-emoji z-10">🚗</span></div>
+          <div class="p-6"><div class="text-xs text-gold-light uppercase tracking-widest mb-1">Auto Detailing</div><h3 class="font-serif text-lg">Velocity Auto Detailing</h3></div>
+        </div>
       </div>
-      <div class="reveal d3 text-center relative">
-        <div class="w-16 h-16 mx-auto rounded-full glass-gold flex items-center justify-center font-serif text-xl mb-6 relative z-10">03</div>
-        <h4 class="font-medium mb-2">Build</h4>
-        <p class="text-white/50 text-sm">We develop a fast, responsive, production-ready website.</p>
-      </div>
-      <div class="reveal d4 text-center relative">
-        <div class="w-16 h-16 mx-auto rounded-full glass-gold flex items-center justify-center font-serif text-xl mb-6 relative z-10">04</div>
-        <h4 class="font-medium mb-2">Launch</h4>
-        <p class="text-white/50 text-sm">We deploy your new site and set you up to grow.</p>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- PRICING PREVIEW -->
-  <section class="max-w-7xl mx-auto px-6 lg:px-10 py-28">
-    <div class="text-center max-w-2xl mx-auto mb-16 reveal">
-      <span class="badge">Investment</span>
-      <h2 class="text-4xl lg:text-5xl font-serif font-bold mt-4">Simple, Honest Pricing</h2>
-    </div>
-    <div class="grid md:grid-cols-3 gap-6">
-      <div class="glass rounded-2xl p-8 glow-card reveal">
-        <h3 class="font-serif text-xl mb-2">Starter</h3>
-        <div class="text-3xl font-serif text-gold-grad mb-4">$600–$800</div>
-        <p class="text-white/50 text-sm mb-6">Perfect for new businesses needing a clean, professional presence.</p>
-        <button onclick="goToPage('pricing')" class="btn-outline w-full py-3 rounded-full text-sm">See Details</button>
-      </div>
-      <div class="glass-gold rounded-2xl p-8 glow-card reveal d2 relative">
-        <span class="absolute -top-3 left-8 badge bg-ink px-3 py-1 rounded-full border border-gold/40">Most Popular</span>
-        <h3 class="font-serif text-xl mb-2">Professional</h3>
-        <div class="text-3xl font-serif text-gold-grad mb-4">$800–$1,000</div>
-        <p class="text-white/50 text-sm mb-6">Our most popular package for growing local businesses.</p>
-        <button onclick="goToPage('pricing')" class="btn-gold w-full py-3 rounded-full text-sm">See Details</button>
-      </div>
-      <div class="glass rounded-2xl p-8 glow-card reveal d3">
-        <h3 class="font-serif text-xl mb-2">Premium</h3>
-        <div class="text-3xl font-serif text-gold-grad mb-4">$1,000+</div>
-        <p class="text-white/50 text-sm mb-6">Fully custom builds with advanced features and priority care.</p>
-        <button onclick="goToPage('pricing')" class="btn-outline w-full py-3 rounded-full text-sm">See Details</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- TESTIMONIALS -->
-  <section class="max-w-5xl mx-auto px-6 lg:px-10 py-28 text-center">
-    <span class="badge">Client Words</span>
-    <h2 class="text-4xl lg:text-5xl font-serif font-bold mt-4 mb-14 reveal">Trusted by Local Businesses</h2>
-    <div class="relative reveal-scale">
-      <div id="testimonialTrack" class="glass rounded-3xl p-10 lg:p-14 min-h-[260px] flex flex-col items-center justify-center transition-all duration-500"></div>
-      <div class="flex justify-center gap-3 mt-8" id="testimonialDots"></div>
-    </div>
-  </section>
-
-  <!-- FINAL CTA -->
-  <section class="relative py-32 px-6 overflow-hidden">
-    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-gold/5 to-transparent"></div>
-    <div class="max-w-3xl mx-auto text-center relative reveal">
-      <h2 class="text-4xl lg:text-6xl font-serif font-bold mb-6">Ready to Get a Website That <span class="text-gold-grad">Actually Works?</span></h2>
-      <p class="text-white/50 mb-10 text-lg">Let's build a site that makes your business look as good as it deserves.</p>
-      <button onclick="goToPage('contact')" class="btn-gold px-10 py-4 rounded-full font-medium text-lg">Get Your Website</button>
-    </div>
-  </section>
-</section>
-
-<!-- =========================================================== -->
-<!-- SERVICES PAGE -->
-<!-- =========================================================== -->
-<section id="page-services" class="page" style="display:none;">
-  <section class="pt-40 pb-20 max-w-7xl mx-auto px-6 lg:px-10">
-    <div class="text-center max-w-2xl mx-auto mb-20 reveal in">
-      <span class="badge">Our Services</span>
-      <h1 class="text-4xl lg:text-6xl font-serif font-bold mt-4">Everything Your Business Needs Online</h1>
-      <p class="text-white/50 mt-5">From first impression to final click — we build every piece with intention.</p>
-    </div>
-    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div class="glass rounded-2xl p-8 glow-card reveal">
-        <div class="w-12 h-12 rounded-xl bg-gold/10 flex items-center justify-center mb-6 text-gold-light">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/></svg>
+    <!-- WHY APEX -->
+    <section class="max-w-7xl mx-auto px-6 lg:px-10 py-28 grid lg:grid-cols-2 gap-16 items-center">
+      <div class="reveal-left">
+        <span class="badge">Why Apex</span>
+        <h2 class="text-4xl lg:text-5xl font-serif font-bold mt-4 mb-8 leading-tight">We Build Trust <span class="text-gold-grad">Before</span> a Word Is Spoken</h2>
+        <div class="space-y-6">
+          <div class="flex gap-4"><div class="w-9 h-9 rounded-full border border-gold/40 flex items-center justify-center text-gold-light shrink-0">01</div><div><h4 class="font-medium mb-1">Designed to Convert</h4><p class="text-white/50 text-sm">Every layout is built with one goal: turning visitors into paying customers.</p></div></div>
+          <div class="flex gap-4"><div class="w-9 h-9 rounded-full border border-gold/40 flex items-center justify-center text-gold-light shrink-0">02</div><div><h4 class="font-medium mb-1">Premium Craftsmanship</h4><p class="text-white/50 text-sm">No drag-and-drop templates — every site is custom coded and polished.</p></div></div>
+          <div class="flex gap-4"><div class="w-9 h-9 rounded-full border border-gold/40 flex items-center justify-center text-gold-light shrink-0">03</div><div><h4 class="font-medium mb-1">Built for Local Business</h4><p class="text-white/50 text-sm">We specialize in salons, restaurants, contractors and auto shops — we know what works.</p></div></div>
         </div>
-        <h3 class="text-xl font-serif mb-3">Custom Website Design</h3>
-        <p class="text-white/50 text-sm mb-5 leading-relaxed">A one-of-a-kind design tailored to your brand's personality and customers.</p>
-        <ul class="space-y-2 text-sm text-white/60">
-          <li>✓ Brand-matched visual identity</li>
-          <li>✓ Fully custom layouts</li>
-          <li>✓ Premium typography & imagery</li>
-          <li>✓ No cookie-cutter templates</li>
-        </ul>
-      </div>
-      <div class="glass rounded-2xl p-8 glow-card reveal d2">
-        <div class="w-12 h-12 rounded-xl bg-gold/10 flex items-center justify-center mb-6 text-gold-light">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 5l-6 7 6 7M16 5l6 7-6 7"/></svg>
-        </div>
-        <h3 class="text-xl font-serif mb-3">Website Development</h3>
-        <p class="text-white/50 text-sm mb-5 leading-relaxed">Clean, modern code that loads fast and runs flawlessly.</p>
-        <ul class="space-y-2 text-sm text-white/60">
-          <li>✓ Lightning-fast performance</li>
-          <li>✓ Secure & scalable builds</li>
-          <li>✓ Cross-browser compatibility</li>
-          <li>✓ Easy future updates</li>
-        </ul>
-      </div>
-      <div class="glass rounded-2xl p-8 glow-card reveal d3">
-        <div class="w-12 h-12 rounded-xl bg-gold/10 flex items-center justify-center mb-6 text-gold-light">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
-        </div>
-        <h3 class="text-xl font-serif mb-3">Mobile Optimization</h3>
-        <p class="text-white/50 text-sm mb-5 leading-relaxed">Most visitors browse on their phone — your site will shine there first.</p>
-        <ul class="space-y-2 text-sm text-white/60">
-          <li>✓ Pixel-perfect on all devices</li>
-          <li>✓ Touch-friendly navigation</li>
-          <li>✓ Optimized load speed</li>
-          <li>✓ Click-to-call & directions</li>
-        </ul>
-      </div>
-      <div class="glass rounded-2xl p-8 glow-card reveal">
-        <div class="w-12 h-12 rounded-xl bg-gold/10 flex items-center justify-center mb-6 text-gold-light">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        </div>
-        <h3 class="text-xl font-serif mb-3">SEO Foundations</h3>
-        <p class="text-white/50 text-sm mb-5 leading-relaxed">Get found on Google by the customers already searching for you.</p>
-        <ul class="space-y-2 text-sm text-white/60">
-          <li>✓ Local SEO setup</li>
-          <li>✓ Optimized page structure</li>
-          <li>✓ Google Business integration</li>
-          <li>✓ Fast, indexable pages</li>
-        </ul>
-      </div>
-      <div class="glass rounded-2xl p-8 glow-card reveal d2">
-        <div class="w-12 h-12 rounded-xl bg-gold/10 flex items-center justify-center mb-6 text-gold-light">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 12a9 9 0 11-3-6.7"/><path d="M21 4v6h-6"/></svg>
-        </div>
-        <h3 class="text-xl font-serif mb-3">Website Maintenance</h3>
-        <p class="text-white/50 text-sm mb-5 leading-relaxed">Ongoing care so your site stays fast, secure, and up to date.</p>
-        <ul class="space-y-2 text-sm text-white/60">
-          <li>✓ Regular updates & backups</li>
-          <li>✓ Security monitoring</li>
-          <li>✓ Content changes</li>
-          <li>✓ Priority support</li>
-        </ul>
-      </div>
-      <div class="glass rounded-2xl p-8 glow-card reveal d3">
-        <div class="w-12 h-12 rounded-xl bg-gold/10 flex items-center justify-center mb-6 text-gold-light">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3v18h18"/><path d="M7 15l4-6 3 3 5-8"/></svg>
-        </div>
-        <h3 class="text-xl font-serif mb-3">Conversion Optimization</h3>
-        <p class="text-white/50 text-sm mb-5 leading-relaxed">Strategic layout and copy designed to turn browsers into buyers.</p>
-        <ul class="space-y-2 text-sm text-white/60">
-          <li>✓ Clear calls-to-action</li>
-          <li>✓ Trust-building layout</li>
-          <li>✓ Booking/contact flow design</li>
-          <li>✓ Data-informed structure</li>
-        </ul>
-      </div>
-    </div>
-    <div class="text-center mt-20 reveal">
-      <button onclick="goToPage('contact')" class="btn-gold px-10 py-4 rounded-full font-medium">Start Your Project</button>
-    </div>
-  </section>
-</section>
-
-<!-- =========================================================== -->
-<!-- PORTFOLIO PAGE -->
-<!-- =========================================================== -->
-<section id="page-portfolio" class="page" style="display:none;">
-  <section class="pt-40 pb-24 max-w-7xl mx-auto px-6 lg:px-10">
-    <div class="text-center max-w-2xl mx-auto mb-14 reveal in">
-      <span class="badge">Our Portfolio</span>
-      <h1 class="text-4xl lg:text-6xl font-serif font-bold mt-4">Work Built With Purpose</h1>
-      <p class="text-white/50 mt-5">A look at projects crafted for real local businesses across industries.</p>
-    </div>
-    <div class="flex flex-wrap justify-center gap-3 mb-14 reveal">
-      <button class="filter-btn btn-outline px-5 py-2 rounded-full text-sm active-filter" data-filter="all" onclick="filterPortfolio('all', this)">All</button>
-      <button class="filter-btn btn-outline px-5 py-2 rounded-full text-sm" data-filter="salon" onclick="filterPortfolio('salon', this)">Salons</button>
-      <button class="filter-btn btn-outline px-5 py-2 rounded-full text-sm" data-filter="restaurant" onclick="filterPortfolio('restaurant', this)">Restaurants</button>
-      <button class="filter-btn btn-outline px-5 py-2 rounded-full text-sm" data-filter="contractor" onclick="filterPortfolio('contractor', this)">Contractors</button>
-      <button class="filter-btn btn-outline px-5 py-2 rounded-full text-sm" data-filter="auto" onclick="filterPortfolio('auto', this)">Auto</button>
-    </div>
-    <div id="portfolioGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div class="portfolio-item rounded-2xl overflow-hidden glass glow-card reveal" data-cat="salon">
-        <div class="thumb h-60 bg-gradient-to-br from-[#241d10] to-black flex items-center justify-center"><span class="thumb-emoji z-10">💇‍♀️</span></div>
-        <div class="p-6">
-          <div class="text-xs text-gold-light uppercase tracking-widest mb-1">Salon</div>
-          <h3 class="font-serif text-lg">Luxe Hair Studio</h3>
-          <p class="text-white/50 text-sm mt-2">Elegant booking-focused site with online scheduling.</p>
-        </div>
-      </div>
-      <div class="portfolio-item rounded-2xl overflow-hidden glass glow-card reveal d2" data-cat="salon">
-        <div class="thumb h-60 bg-gradient-to-br from-[#1e1e22] to-black flex items-center justify-center"><span class="thumb-emoji z-10">💈</span></div>
-        <div class="p-6">
-          <div class="text-xs text-gold-light uppercase tracking-widest mb-1">Barbershop</div>
-          <h3 class="font-serif text-lg">The Fade Room</h3>
-          <p class="text-white/50 text-sm mt-2">Bold, masculine branding with instant booking CTA.</p>
-        </div>
-      </div>
-      <div class="portfolio-item rounded-2xl overflow-hidden glass glow-card reveal d3" data-cat="restaurant">
-        <div class="thumb h-60 bg-gradient-to-br from-[#2b2210] to-black flex items-center justify-center"><span class="thumb-emoji z-10">🍝</span></div>
-        <div class="p-6">
-          <div class="text-xs text-gold-light uppercase tracking-widest mb-1">Restaurant</div>
-          <h3 class="font-serif text-lg">Bella Vista Ristorante</h3>
-          <p class="text-white/50 text-sm mt-2">Menu-forward design with reservation integration.</p>
-        </div>
-      </div>
-      <div class="portfolio-item rounded-2xl overflow-hidden glass glow-card reveal" data-cat="contractor">
-        <div class="thumb h-60 bg-gradient-to-br from-[#20221e] to-black flex items-center justify-center"><span class="thumb-emoji z-10">🏗️</span></div>
-        <div class="p-6">
-          <div class="text-xs text-gold-light uppercase tracking-widest mb-1">Contractor</div>
-          <h3 class="font-serif text-lg">Summit Contracting Co.</h3>
-          <p class="text-white/50 text-sm mt-2">Trust-driven layout with project gallery and quote form.</p>
-        </div>
-      </div>
-      <div class="portfolio-item rounded-2xl overflow-hidden glass glow-card reveal d2" data-cat="auto">
-        <div class="thumb h-60 bg-gradient-to-br from-[#241a10] to-black flex items-center justify-center"><span class="thumb-emoji z-10">🚗</span></div>
-        <div class="p-6">
-          <div class="text-xs text-gold-light uppercase tracking-widest mb-1">Auto Detailing</div>
-          <h3 class="font-serif text-lg">Velocity Auto Detailing</h3>
-          <p class="text-white/50 text-sm mt-2">Sleek dark theme with before/after gallery.</p>
-        </div>
-      </div>
-      <div class="portfolio-item rounded-2xl overflow-hidden glass glow-card reveal d3" data-cat="restaurant">
-        <div class="thumb h-60 bg-gradient-to-br from-[#241010] to-black flex items-center justify-center"><span class="thumb-emoji z-10">🥩</span></div>
-        <div class="p-6">
-          <div class="text-xs text-gold-light uppercase tracking-widest mb-1">Restaurant</div>
-          <h3 class="font-serif text-lg">Ember Steakhouse</h3>
-          <p class="text-white/50 text-sm mt-2">Moody, premium branding for a fine dining experience.</p>
-        </div>
-      </div>
-      <div class="portfolio-item rounded-2xl overflow-hidden glass glow-card reveal" data-cat="auto">
-        <div class="thumb h-60 bg-gradient-to-br from-[#1a1e24] to-black flex items-center justify-center"><span class="thumb-emoji z-10">🔧</span></div>
-        <div class="p-6">
-          <div class="text-xs text-gold-light uppercase tracking-widest mb-1">Auto Repair</div>
-          <h3 class="font-serif text-lg">Precision Motors Repair</h3>
-          <p class="text-white/50 text-sm mt-2">Service-focused site with instant quote requests.</p>
-        </div>
-      </div>
-      <div class="portfolio-item rounded-2xl overflow-hidden glass glow-card reveal d2" data-cat="contractor">
-        <div class="thumb h-60 bg-gradient-to-br from-[#101f24] to-black flex items-center justify-center"><span class="thumb-emoji z-10">🦷</span></div>
-        <div class="p-6">
-          <div class="text-xs text-gold-light uppercase tracking-widest mb-1">Healthcare</div>
-          <h3 class="font-serif text-lg">Golden Gate Dental</h3>
-          <p class="text-white/50 text-sm mt-2">Clean, calming design that builds patient trust.</p>
-        </div>
-      </div>
-    </div>
-    <div class="text-center mt-20 reveal">
-      <h3 class="text-2xl font-serif mb-5">Want results like these?</h3>
-      <button onclick="goToPage('contact')" class="btn-gold px-10 py-4 rounded-full font-medium">Get Your Website</button>
-    </div>
-  </section>
-</section>
-
-<!-- =========================================================== -->
-<!-- PRICING PAGE -->
-<!-- =========================================================== -->
-<section id="page-pricing" class="page" style="display:none;">
-  <section class="pt-40 pb-24 max-w-7xl mx-auto px-6 lg:px-10">
-    <div class="text-center max-w-2xl mx-auto mb-20 reveal in">
-      <span class="badge">Investment</span>
-      <h1 class="text-4xl lg:text-6xl font-serif font-bold mt-4">Pricing Built on Value</h1>
-      <p class="text-white/50 mt-5">No hidden fees. No cheap templates. Just premium work priced fairly.</p>
-    </div>
-    <div class="grid lg:grid-cols-3 gap-8 items-stretch">
-      <div class="glass rounded-3xl p-10 glow-card reveal flex flex-col">
-        <h3 class="font-serif text-2xl mb-2">Starter</h3>
-        <p class="text-white/50 text-sm mb-6">For new businesses that need a clean, credible online presence.</p>
-        <div class="text-4xl font-serif text-gold-grad mb-8">$600–$800</div>
-        <ul class="space-y-3 text-sm text-white/70 mb-10 flex-1">
-          <li class="flex gap-2"><span class="text-gold-light">✓</span> Up to 3 pages</li>
-          <li class="flex gap-2"><span class="text-gold-light">✓</span> Mobile-responsive design</li>
-          <li class="flex gap-2"><span class="text-gold-light">✓</span> Contact form</li>
-          <li class="flex gap-2"><span class="text-gold-light">✓</span> Basic SEO setup</li>
-          <li class="flex gap-2"><span class="text-gold-light">✓</span> 7-day delivery</li>
-          <li class="flex gap-2"><span class="text-gold-light">✓</span> 1 revision round</li>
-        </ul>
-        <button onclick="goToPage('contact')" class="btn-outline w-full py-3.5 rounded-full">Get Started</button>
-      </div>
-      <div class="glass-gold rounded-3xl p-10 glow-card reveal d2 relative flex flex-col lg:scale-105 shadow-2xl">
-        <span class="absolute -top-3 left-10 badge bg-ink px-3 py-1 rounded-full border border-gold/40">Most Popular</span>
-        <h3 class="font-serif text-2xl mb-2">Professional</h3>
-        <p class="text-white/50 text-sm mb-6">For businesses ready to stand out and win more customers.</p>
-        <div class="text-4xl font-serif text-gold-grad mb-8">$800–$1,000</div>
-        <ul class="space-y-3 text-sm text-white/70 mb-10 flex-1">
-          <li class="flex gap-2"><span class="text-gold-light">✓</span> Up to 5 pages</li>
-          <li class="flex gap-2"><span class="text-gold-light">✓</span> Fully custom design</li>
-          <li class="flex gap-2"><span class="text-gold-light">✓</span> Advanced animations</li>
-          <li class="flex gap-2"><span class="text-gold-light">✓</span> SEO foundations</li>
-          <li class="flex gap-2"><span class="text-gold-light">✓</span> Google Business integration</li>
-          <li class="flex gap-2"><span class="text-gold-light">✓</span> Booking/contact integration</li>
-          <li class="flex gap-2"><span class="text-gold-light">✓</span> 2 revision rounds</li>
-        </ul>
-        <button onclick="goToPage('contact')" class="btn-gold w-full py-3.5 rounded-full">Get Started</button>
-      </div>
-      <div class="glass rounded-3xl p-10 glow-card reveal d3 flex flex-col">
-        <h3 class="font-serif text-2xl mb-2">Premium</h3>
-        <p class="text-white/50 text-sm mb-6">Fully custom, feature-rich builds for serious growth.</p>
-        <div class="text-4xl font-serif text-gold-grad mb-8">$1,000+</div>
-        <ul class="space-y-3 text-sm text-white/70 mb-10 flex-1">
-          <li class="flex gap-2"><span class="text-gold-light">✓</span> Unlimited pages</li>
-          <li class="flex gap-2"><span class="text-gold-light">✓</span> Full custom design & motion</li>
-          <li class="flex gap-2"><span class="text-gold-light">✓</span> Advanced SEO strategy</li>
-          <li class="flex gap-2"><span class="text-gold-light">✓</span> Copywriting assistance</li>
-          <li class="flex gap-2"><span class="text-gold-light">✓</span> Conversion optimization</li>
-          <li class="flex gap-2"><span class="text-gold-light">✓</span> Ongoing maintenance option</li>
-          <li class="flex gap-2"><span class="text-gold-light">✓</span> 3 revision rounds</li>
-        </ul>
-        <button onclick="goToPage('contact')" class="btn-outline w-full py-3.5 rounded-full">Get Started</button>
-      </div>
-    </div>
-    <!-- FAQ -->
-    <div class="max-w-3xl mx-auto mt-28">
-      <div class="text-center mb-12 reveal">
-        <span class="badge">Questions</span>
-        <h2 class="text-3xl lg:text-4xl font-serif font-bold mt-4">Frequently Asked</h2>
-      </div>
-      <div class="space-y-4" id="faqList"></div>
-    </div>
-  </section>
-</section>
-
-<!-- =========================================================== -->
-<!-- ABOUT PAGE -->
-<!-- =========================================================== -->
-<section id="page-about" class="page" style="display:none;">
-  <section class="pt-40 pb-24 max-w-7xl mx-auto px-6 lg:px-10">
-    <div class="grid lg:grid-cols-2 gap-16 items-center mb-28">
-      <div class="reveal-left in">
-        <span class="badge">About Apex</span>
-        <h1 class="text-4xl lg:text-6xl font-serif font-bold mt-4 mb-8 leading-tight">Built by Craftsmen, <span class="text-gold-grad">Not a Template Factory</span></h1>
-        <p class="text-white/60 leading-relaxed mb-5">Apex Web Developers was founded on a simple idea: local businesses deserve websites as premium as the businesses themselves. Too many small businesses are stuck with outdated, generic templates that don't reflect the quality of their work.</p>
-        <p class="text-white/60 leading-relaxed">We partner closely with salons, barbershops, restaurants, contractors, and auto businesses to build custom digital experiences that build trust instantly and turn browsers into paying customers.</p>
       </div>
       <div class="reveal-right relative">
-        <div class="glass-gold rounded-3xl p-10 float">
-          <div class="fade-line mb-8"></div>
-          <p class="font-serif text-2xl leading-relaxed">"Our mission is to make every local business look like a market leader online."</p>
-          <div class="mt-8 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-gold-light to-gold flex items-center justify-center font-serif text-ink font-bold">A</div>
-            <div>
-              <div class="font-medium">Apex Founding Team</div>
-              <div class="text-xs text-white/50">Web Design & Strategy</div>
-            </div>
+        <div class="glass-gold rounded-3xl p-10 relative overflow-hidden">
+          <div class="fade-line w-full mb-8"></div>
+          <div class="grid grid-cols-2 gap-8">
+            <div><div class="text-4xl font-serif text-gold-grad counter" data-target="94">0</div><div class="text-xs text-white/50 uppercase tracking-widest mt-2">% More Inquiries</div></div>
+            <div><div class="text-4xl font-serif text-gold-grad counter" data-target="7">0</div><div class="text-xs text-white/50 uppercase tracking-widest mt-2">Day Avg. Delivery</div></div>
+            <div><div class="text-4xl font-serif text-gold-grad counter" data-target="100">0</div><div class="text-xs text-white/50 uppercase tracking-widest mt-2">% Custom Built</div></div>
+            <div><div class="text-4xl font-serif text-gold-grad counter" data-target="24">0</div><div class="text-xs text-white/50 uppercase tracking-widest mt-2">Hr Support Reply</div></div>
           </div>
+          <div class="fade-line w-full mt-8"></div>
         </div>
       </div>
-    </div>
-    <div class="grid md:grid-cols-4 gap-6 mb-28">
-      <div class="glass rounded-2xl p-8 text-center glow-card reveal">
-        <div class="text-3xl font-serif text-gold-grad counter" data-target="50">0</div>
-        <div class="text-xs text-white/50 uppercase tracking-widest mt-2">Projects Completed</div>
-      </div>
-      <div class="glass rounded-2xl p-8 text-center glow-card reveal d2">
-        <div class="text-3xl font-serif text-gold-grad"><span class="counter" data-target="94">0</span>%</div>
-        <div class="text-xs text-white/50 uppercase tracking-widest mt-2">Avg Inquiry Increase</div>
-      </div>
-      <div class="glass rounded-2xl p-8 text-center glow-card reveal d3">
-        <div class="text-3xl font-serif text-gold-grad"><span class="counter" data-target="100">0</span>%</div>
-        <div class="text-xs text-white/50 uppercase tracking-widest mt-2">Client Satisfaction</div>
-      </div>
-      <div class="glass rounded-2xl p-8 text-center glow-card reveal d4">
-        <div class="text-3xl font-serif text-gold-grad"><span class="counter" data-target="24">0</span>h</div>
-        <div class="text-xs text-white/50 uppercase tracking-widest mt-2">Support Response</div>
-      </div>
-    </div>
-    <div class="text-center mb-14 reveal">
-      <span class="badge">Our Values</span>
-      <h2 class="text-4xl font-serif font-bold mt-4">What Drives Us</h2>
-    </div>
-    <div class="grid md:grid-cols-4 gap-6">
-      <div class="glass rounded-2xl p-8 glow-card reveal">
-        <h4 class="font-serif text-lg mb-2">Craftsmanship</h4>
-        <p class="text-white/50 text-sm">Every pixel and line of code is intentional.</p>
-      </div>
-      <div class="glass rounded-2xl p-8 glow-card reveal d2">
-        <h4 class="font-serif text-lg mb-2">Transparency</h4>
-        <p class="text-white/50 text-sm">Clear pricing, clear timelines, no surprises.</p>
-      </div>
-      <div class="glass rounded-2xl p-8 glow-card reveal d3">
-        <h4 class="font-serif text-lg mb-2">Results-Driven</h4>
-        <p class="text-white/50 text-sm">Beautiful design that's built to convert.</p>
-      </div>
-      <div class="glass rounded-2xl p-8 glow-card reveal d4">
-        <h4 class="font-serif text-lg mb-2">Partnership</h4>
-        <p class="text-white/50 text-sm">We grow when your business grows.</p>
-      </div>
-    </div>
-    <div class="text-center mt-24 reveal">
-      <button onclick="goToPage('contact')" class="btn-gold px-10 py-4 rounded-full font-medium">Work With Us</button>
-    </div>
-  </section>
-</section>
+    </section>
 
-<!-- =========================================================== -->
-<!-- CONTACT PAGE -->
-<!-- =========================================================== -->
-<section id="page-contact" class="page" style="display:none;">
-  <section class="pt-40 pb-24 max-w-7xl mx-auto px-6 lg:px-10">
-    <div class="text-center max-w-2xl mx-auto mb-16 reveal in">
-      <span class="badge">Get In Touch</span>
-      <h1 class="text-4xl lg:text-6xl font-serif font-bold mt-4">Let's Build Something <span class="text-gold-grad">Exceptional.</span></h1>
-      <p class="text-white/50 mt-5">Tell us about your business and we'll get back to you within 24 hours.</p>
-    </div>
-    <div class="grid lg:grid-cols-5 gap-10">
-      <div class="lg:col-span-3 glass rounded-3xl p-8 lg:p-10 reveal-left">
-        <form id="contactForm" class="space-y-5" onsubmit="submitForm(event)">
-          <div class="grid sm:grid-cols-2 gap-5">
-            <div>
-              <label class="text-xs text-white/50 uppercase tracking-widest mb-2 block">Name</label>
-              <input required type="text" class="w-full rounded-lg px-4 py-3 text-sm" placeholder="John Smith" />
-            </div>
-            <div>
-              <label class="text-xs text-white/50 uppercase tracking-widest mb-2 block">Business Name</label>
-              <input required type="text" class="w-full rounded-lg px-4 py-3 text-sm" placeholder="Smith's Barbershop" />
-            </div>
-          </div>
-          <div class="grid sm:grid-cols-2 gap-5">
-            <div>
-              <label class="text-xs text-white/50 uppercase tracking-widest mb-2 block">Email</label>
-              <input required type="email" class="w-full rounded-lg px-4 py-3 text-sm" placeholder="you@business.com" />
-            </div>
-            <div>
-              <label class="text-xs text-white/50 uppercase tracking-widest mb-2 block">Phone</label>
-              <input required type="tel" class="w-full rounded-lg px-4 py-3 text-sm" placeholder="(555) 123-4567" />
-            </div>
-          </div>
-          <div class="grid sm:grid-cols-2 gap-5">
-            <div>
-              <label class="text-xs text-white/50 uppercase tracking-widest mb-2 block">Business Type</label>
-              <select class="w-full rounded-lg px-4 py-3 text-sm">
-                <option>Salon / Spa</option>
-                <option>Barbershop</option>
-                <option>Restaurant</option>
-                <option>Contractor</option>
-                <option>Auto Business</option>
-                <option>Other Local Business</option>
-              </select>
-            </div>
-            <div>
-              <label class="text-xs text-white/50 uppercase tracking-widest mb-2 block">Budget</label>
-              <select class="w-full rounded-lg px-4 py-3 text-sm">
-                <option>$600 – $800</option>
-                <option>$800 – $1,000</option>
-                <option>$1,000+</option>
-                <option>Not sure yet</option>
-              </select>
-            </div>
-          </div>
-          <div>
-            <label class="text-xs text-white/50 uppercase tracking-widest mb-2 block">What do you need?</label>
-            <textarea rows="4" class="w-full rounded-lg px-4 py-3 text-sm" placeholder="Tell us about your project..."></textarea>
-          </div>
-          <button type="submit" class="btn-gold w-full py-4 rounded-full font-medium mt-4">Send Message</button>
-          <div id="formSuccess" class="hidden text-center text-gold-light text-sm pt-4">✓ Thank you! We'll be in touch within 24 hours.</div>
-        </form>
+    <!-- PROCESS -->
+    <section class="max-w-7xl mx-auto px-6 lg:px-10 py-28">
+      <div class="text-center max-w-2xl mx-auto mb-20 reveal">
+        <span class="badge">Our Process</span>
+        <h2 class="text-4xl lg:text-5xl font-serif font-bold mt-4">From Idea to Launch</h2>
       </div>
-      <div class="lg:col-span-2 space-y-6 reveal-right">
-        <div class="glass-gold rounded-2xl p-8">
-          <h3 class="font-serif text-xl mb-6">Contact Info</h3>
-          <div class="space-y-5 text-sm">
-            <div class="flex gap-3 items-start">
-              <span class="text-gold-light">✉</span>
-              <div>
-                <div class="text-white/50 text-xs uppercase tracking-widest">Email</div>
-                <div>hello@apexwebdevelopers.com</div>
-              </div>
-            </div>
-            <div class="flex gap-3 items-start">
-              <span class="text-gold-light">☎</span>
-              <div>
-                <div class="text-white/50 text-xs uppercase tracking-widest">Phone</div>
-                <div>(555) 200-4488</div>
-              </div>
-            </div>
-            <div class="flex gap-3 items-start">
-              <span class="text-gold-light">⚑</span>
-              <div>
-                <div class="text-white/50 text-xs uppercase tracking-widest">Availability</div>
-                <div>Remote — Serving businesses nationwide</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="glass rounded-2xl p-8">
-          <h4 class="font-serif text-lg mb-3">Response Time</h4>
-          <p class="text-white/50 text-sm">We respond to every inquiry within 24 hours, often much sooner.</p>
-        </div>
+      <div class="grid md:grid-cols-4 gap-8 relative">
+        <div class="hidden md:block absolute top-9 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent"></div>
+        <div class="reveal text-center relative"><div class="w-16 h-16 mx-auto rounded-full glass-gold flex items-center justify-center font-serif text-xl mb-6 relative z-10">01</div><h4 class="font-medium mb-2">Discover</h4><p class="text-white/50 text-sm">We learn your business, your goals, and your customers.</p></div>
+        <div class="reveal d2 text-center relative"><div class="w-16 h-16 mx-auto rounded-full glass-gold flex items-center justify-center font-serif text-xl mb-6 relative z-10">02</div><h4 class="font-medium mb-2">Design</h4><p class="text-white/50 text-sm">We craft a custom visual identity built to impress.</p></div>
+        <div class="reveal d3 text-center relative"><div class="w-16 h-16 mx-auto rounded-full glass-gold flex items-center justify-center font-serif text-xl mb-6 relative z-10">03</div><h4 class="font-medium mb-2">Build</h4><p class="text-white/50 text-sm">We develop a fast, responsive, production-ready website.</p></div>
+        <div class="reveal d4 text-center relative"><div class="w-16 h-16 mx-auto rounded-full glass-gold flex items-center justify-center font-serif text-xl mb-6 relative z-10">04</div><h4 class="font-medium mb-2">Launch</h4><p class="text-white/50 text-sm">We deploy your new site and set you up to grow.</p></div>
       </div>
-    </div>
-  </section>
-</section>
+    </section>
 
+    <!-- PRICING PREVIEW -->
+    <section class="max-w-7xl mx-auto px-6 lg:px-10 py-28">
+      <div class="text-center max-w-2xl mx-auto mb-16 reveal">
+        <span class="badge">Investment</span>
+        <h2 class="text-4xl lg:text-5xl font-serif font-bold mt-4">Simple, Honest Pricing</h2>
+      </div>
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="glass rounded-2xl p-8 glow-card reveal"><h3 class="font-serif text-xl mb-2">Starter</h3><div class="text-3xl font-serif text-gold-grad mb-4">$600–$800</div><p class="text-white/50 text-sm mb-6">Perfect for new businesses needing a clean, professional presence.</p><button onclick="goToPage('pricing')" class="btn-outline w-full py-3 rounded-full text-sm">See Details</button></div>
+        <div class="glass-gold rounded-2xl p-8 glow-card reveal d2 relative"><span class="absolute -top-3 left-8 badge bg-ink px-3 py-1 rounded-full border border-gold/40">Most Popular</span><h3 class="font-serif text-xl mb-2">Professional</h3><div class="text-3xl font-serif text-gold-grad mb-4">$800–$1,000</div><p class="text-white/50 text-sm mb-6">Our most popular package for growing local businesses.</p><button onclick="goToPage('pricing')" class="btn-gold w-full py-3 rounded-full text-sm">See Details</button></div>
+        <div class="glass rounded-2xl p-8 glow-card reveal d3"><h3 class="font-serif text-xl mb-2">Premium</h3><div class="text-3xl font-serif text-gold-grad mb-4">$1,000+</div><p class="text-white/50 text-sm mb-6">Fully custom builds with advanced features and priority care.</p><button onclick="goToPage('pricing')" class="btn-outline w-full py-3 rounded-full text-sm">See Details</button></div>
+      </div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section class="max-w-5xl mx-auto px-6 lg:px-10 py-28 text-center">
+      <span class="badge">Client Words</span>
+      <h2 class="text-4xl lg:text-5xl font-serif font-bold mt-4 mb-14 reveal">Trusted by Local Businesses</h2>
+      <div class="relative reveal-scale">
+        <div id="testimonialTrack" class="glass rounded-3xl p-10 lg:p-14 min-h-[260px] flex flex-col items-center justify-center transition-all duration-500"></div>
+        <div class="flex justify-center gap-3 mt-8" id="testimonialDots"></div>
+      </div>
+    </section>
+
+    <!-- FINAL CTA -->
+    <section class="relative py-32 px-6 overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-b from-transparent via-gold/5 to-transparent"></div>
+      <div class="max-w-3xl mx-auto text-center relative reveal">
+        <h2 class="text-4xl lg:text-6xl font-serif font-bold mb-6">Ready to Get a Website That <span class="text-gold-grad">Actually Works?</span></h2>
+        <p class="text-white/50 mb-10 text-lg">Let's build a site that makes your business look as good as it deserves.</p>
+        <button onclick="goToPage('contact')" class="btn-gold px-10 py-4 rounded-full font-medium text-lg">Get Your Website</button>
+      </div>
+    </section>
+  </section>
+
+  <!-- SERVICES PAGE -->
+  <section id="page-services" class="page" style="display:none;">
+    <section class="pt-40 pb-20 max-w-7xl mx-auto px-6 lg:px-10">
+      <div class="text-center max-w-2xl mx-auto mb-20 reveal in">
+        <span class="badge">Our Services</span>
+        <h1 class="text-4xl lg:text-6xl font-serif font-bold mt-4">Everything Your Business Needs Online</h1>
+        <p class="text-white/50 mt-5">From first impression to final click — we build every piece with intention.</p>
+      </div>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="glass rounded-2xl p-8 glow-card reveal"><div class="w-12 h-12 rounded-xl bg-gold/10 flex items-center justify-center mb-6 text-gold-light"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/></svg></div><h3 class="text-xl font-serif mb-3">Custom Website Design</h3><p class="text-white/50 text-sm mb-5 leading-relaxed">A one-of-a-kind design tailored to your brand's personality and customers.</p><ul class="space-y-2 text-sm text-white/60"><li>✓ Brand-matched visual identity</li><li>✓ Fully custom layouts</li><li>✓ Premium typography & imagery</li><li>✓ No cookie-cutter templates</li></ul></div>
+        <div class="glass rounded-2xl p-8 glow-card reveal d2"><div class="w-12 h-12 rounded-xl bg-gold/10 flex items-center justify-center mb-6 text-gold-light"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 5l-6 7 6 7M16 5l6 7-6 7"/></svg></div><h3 class="text-xl font-serif mb-3">Website Development</h3><p class="text-white/50 text-sm mb-5 leading-relaxed">Clean, modern code that loads fast and runs flawlessly.</p><ul class="space-y-2 text-sm text-white/60"><li>✓ Lightning-fast performance</li><li>✓ Secure & scalable builds</li><li>✓ Cross-browser compatibility</li><li>✓ Easy future updates</li></ul></div>
+        <div class="glass rounded-2xl p-8 glow-card reveal d3"><div class="w-12 h-12 rounded-xl bg-gold/10 flex items-center justify-center mb-6 text-gold-light"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="11" y1="18" x2="13" y2="18"/></svg></div><h3 class="text-xl font-serif mb-3">Mobile Optimization</h3><p class="text-white/50 text-sm mb-5 leading-relaxed">Most visitors browse on their phone — your site will shine there first.</p><ul class="space-y-2 text-sm text-white/60"><li>✓ Pixel-perfect on all devices</li><li>✓ Touch-friendly navigation</li><li>✓ Optimized load speed</li><li>✓ Click-to-call & directions</li></ul></div>
+        <div class="glass rounded-2xl p-8 glow-card reveal"><div class="w-12 h-12 rounded-xl bg-gold/10 flex items-center justify-center mb-6 text-gold-light"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><h3 class="text-xl font-serif mb-3">SEO Foundations</h3><p class="text-white/50 text-sm mb-5 leading-relaxed">Get found on Google by the customers already searching for you.</p><ul class="space-y-2 text-sm text-white/60"><li>✓ Local SEO setup</li><li>✓ Optimized page structure</li><li>✓ Google Business integration</li><li>✓ Fast, indexable pages</li></ul></div>
+        <div class="glass rounded-2xl p-8 glow-card reveal d2"><div class="w-12 h-12 rounded-xl bg-gold/10 flex items-center justify-center mb-6 text-gold-light"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 12a9 9 0 11-3-6.7"/><path d="M21 4v6h-6"/></svg></div><h3 class="text-xl font-serif mb-3">Website Maintenance</h3><p class="text-white/50 text-sm mb-5 leading-relaxed">Ongoing care so your site stays fast, secure, and up to date.</p><ul class="space-y-2 text-sm text-white/60"><li>✓ Regular updates & backups</li><li>✓ Security monitoring</li><li>✓ Content changes</li><li>✓ Priority support</li></ul></div>
+        <div class="glass rounded-2xl p-8 glow-card reveal d3"><div class="w-12 h-12 rounded-xl bg-gold/10 flex items-center justify-center mb-6 text-gold-light"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3v18h18"/><path d="M7 15l4-6 3 3 5-8"/></svg></div><h3 class="text-xl font-serif mb-3">Conversion Optimization</h3><p class="text-white/50 text-sm mb-5 leading-relaxed">Strategic layout and copy designed to turn browsers into buyers.</p><ul class="space-y-2 text-sm text-white/60"><li>✓ Clear calls-to-action</li><li>✓ Trust-building layout</li><li>✓ Booking/contact flow design</li><li>✓ Data-informed structure</li></ul></div>
+      </div>
+      <div class="text-center mt-20 reveal"><button onclick="goToPage('contact')" class="btn-gold px-10 py-4 rounded-full font-medium">Start Your Project</button></div>
+    </section>
+  </section>
+
+  <!-- PORTFOLIO PAGE -->
+  <section id="page-portfolio" class="page" style="display:none;">
+    <section class="pt-40 pb-24 max-w-7xl mx-auto px-6 lg:px-10">
+      <div class="text-center max-w-2xl mx-auto mb-14 reveal in">
+        <span class="badge">Our Portfolio</span>
+        <h1 class="text-4xl lg:text-6xl font-serif font-bold mt-4">Work Built With Purpose</h1>
+        <p class="text-white/50 mt-5">A look at projects crafted for real local businesses across industries.</p>
+      </div>
+      <div class="flex flex-wrap justify-center gap-3 mb-14 reveal">
+        <button class="filter-btn btn-outline px-5 py-2 rounded-full text-sm active-filter" data-filter="all" onclick="filterPortfolio('all', this)">All</button>
+        <button class="filter-btn btn-outline px-5 py-2 rounded-full text-sm" data-filter="salon" onclick="filterPortfolio('salon', this)">Salons</button>
+        <button class="filter-btn btn-outline px-5 py-2 rounded-full text-sm" data-filter="restaurant" onclick="filterPortfolio('restaurant', this)">Restaurants</button>
+        <button class="filter-btn btn-outline px-5 py-2 rounded-full text-sm" data-filter="contractor" onclick="filterPortfolio('contractor', this)">Contractors</button>
+        <button class="filter-btn btn-outline px-5 py-2 rounded-full text-sm" data-filter="auto" onclick="filterPortfolio('auto', this)">Auto</button>
+      </div>
+      <div id="portfolioGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="portfolio-item rounded-2xl overflow-hidden glass glow-card reveal" data-cat="salon"><div class="thumb h-60 bg-gradient-to-br from-[#241d10] to-black flex items-center justify-center"><span class="thumb-emoji z-10">💇‍♀️</span></div><div class="p-6"><div class="text-xs text-gold-light uppercase tracking-widest mb-1">Salon</div><h3 class="font-serif text-lg">Luxe Hair Studio</h3><p class="text-white/50 text-sm mt-2">Elegant booking-focused site with online scheduling.</p></div></div>
+        <div class="portfolio-item rounded-2xl overflow-hidden glass glow-card reveal d2" data-cat="salon"><div class="thumb h-60 bg-gradient-to-br from-[#1e1e22] to-black flex items-center justify-center"><span class="thumb-emoji z-10">💈</span></div><div class="p-6"><div class="text-xs text-gold-light uppercase tracking-widest mb-1">Barbershop</div><h3 class="font-serif text-lg">The Fade Room</h3><p class="text-white/50 text-sm mt-2">Bold, masculine branding with instant booking CTA.</p></div></div>
+        <div class="portfolio-item rounded-2xl overflow-hidden glass glow-card reveal d3" data-cat="restaurant"><div class="thumb h-60 bg-gradient-to-br from-[#2b2210] to-black flex items-center justify-center"><span class="thumb-emoji z-10">🍝</span></div><div class="p-6"><div class="text-xs text-gold-light uppercase tracking-widest mb-1">Restaurant</div><h3 class="font-serif text-lg">Bella Vista Ristorante</h3><p class="text-white/50 text-sm mt-2">Menu-forward design with reservation integration.</p></div></div>
+        <div class="portfolio-item rounded-2xl overflow-hidden glass glow-card reveal" data-cat="contractor"><div class="thumb h-60 bg-gradient-to-br from-[#20221e] to-black flex items-center justify-center"><span class="thumb-emoji z-10">🏗️</span></div><div class="p-6"><div class="text-xs text-gold-light uppercase tracking-widest mb-1">Contractor</div><h3 class="font-serif text-lg">Summit Contracting Co.</h3><p class="text-white/50 text-sm mt-2">Trust-driven layout with project gallery and quote form.</p></div></div>
+        <div class="portfolio-item rounded-2xl overflow-hidden glass glow-card reveal d2" data-cat="auto"><div class="thumb h-60 bg-gradient-to-br from-[#241a10] to-black flex items-center justify-center"><span class="thumb-emoji z-10">🚗</span></div><div class="p-6"><div class="text-xs text-gold-light uppercase tracking-widest mb-1">Auto Detailing</div><h3 class="font-serif text-lg">Velocity Auto Detailing</h3><p class="text-white/50 text-sm mt-2">Sleek dark theme with before/after gallery.</p></div></div>
+        <div class="portfolio-item rounded-2xl overflow-hidden glass glow-card reveal d3" data-cat="restaurant"><div class="thumb h-60 bg-gradient-to-br from-[#241010] to-black flex items-center justify-center"><span class="thumb-emoji z-10">🥩</span></div><div class="p-6"><div class="text-xs text-gold-light uppercase tracking-widest mb-1">Restaurant</div><h3 class="font-serif text-lg">Ember Steakhouse</h3><p class="text-white/50 text-sm mt-2">Moody, premium branding for a fine dining experience.</p></div></div>
+        <div class="portfolio-item rounded-2xl overflow-hidden glass glow-card reveal" data-cat="auto"><div class="thumb h-60 bg-gradient-to-br from-[#1a1e24] to-black flex items-center justify-center"><span class="thumb-emoji z-10">🔧</span></div><div class="p-6"><div class="text-xs text-gold-light uppercase tracking-widest mb-1">Auto Repair</div><h3 class="font-serif text-lg">Precision Motors Repair</h3><p class="text-white/50 text-sm mt-2">Service-focused site with instant quote requests.</p></div></div>
+        <div class="portfolio-item rounded-2xl overflow-hidden glass glow-card reveal d2" data-cat="contractor"><div class="thumb h-60 bg-gradient-to-br from-[#101f24] to-black flex items-center justify-center"><span class="thumb-emoji z-10">🦷</span></div><div class="p-6"><div class="text-xs text-gold-light uppercase tracking-widest mb-1">Healthcare</div><h3 class="font-serif text-lg">Golden Gate Dental</h3><p class="text-white/50 text-sm mt-2">Clean, calming design that builds patient trust.</p></div></div>
+      </div>
+      <div class="text-center mt-20 reveal"><h3 class="text-2xl font-serif mb-5">Want results like these?</h3><button onclick="goToPage('contact')" class="btn-gold px-10 py-4 rounded-full font-medium">Get Your Website</button></div>
+    </section>
+  </section>
+
+  <!-- PRICING PAGE -->
+  <section id="page-pricing" class="page" style="display:none;">
+    <section class="pt-40 pb-24 max-w-7xl mx-auto px-6 lg:px-10">
+      <div class="text-center max-w-2xl mx-auto mb-20 reveal in">
+        <span class="badge">Investment</span>
+        <h1 class="text-4xl lg:text-6xl font-serif font-bold mt-4">Pricing Built on Value</h1>
+        <p class="text-white/50 mt-5">No hidden fees. No cheap templates. Just premium work priced fairly.</p>
+      </div>
+      <div class="grid lg:grid-cols-3 gap-8 items-stretch">
+        <div class="glass rounded-3xl p-10 glow-card reveal flex flex-col"><h3 class="font-serif text-2xl mb-2">Starter</h3><p class="text-white/50 text-sm mb-6">For new businesses that need a clean, credible online presence.</p><div class="text-4xl font-serif text-gold-grad mb-8">$600–$800</div><ul class="space-y-3 text-sm text-white/70 mb-10 flex-1"><li class="flex gap-2"><span class="text-gold-light">✓</span> Up to 3 pages</li><li class="flex gap-2"><span class="text-gold-light">✓</span> Mobile-responsive design</li><li class="flex gap-2"><span class="text-gold-light">✓</span> Contact form</li><li class="flex gap-2"><span class="text-gold-light">✓</span> Basic SEO setup</li><li class="flex gap-2"><span class="text-gold-light">✓</span> 7-day delivery</li><li class="flex gap-2"><span class="text-gold-light">✓</span> 1 revision round</li></ul><button onclick="goToPage('contact')" class="btn-outline w-full py-3.5 rounded-full">Get Started</button></div>
+        <div class="glass-gold rounded-3xl p-10 glow-card reveal d2 relative flex flex-col lg:scale-105 shadow-2xl"><span class="absolute -top-3 left-10 badge bg-ink px-3 py-1 rounded-full border border-gold/40">Most Popular</span><h3 class="font-serif text-2xl mb-2">Professional</h3><p class="text-white/50 text-sm mb-6">For businesses ready to stand out and win more customers.</p><div class="text-4xl font-serif text-gold-grad mb-8">$800–$1,000</div><ul class="space-y-3 text-sm text-white/70 mb-10 flex-1"><li class="flex gap-2"><span class="text-gold-light">✓</span> Up to 5 pages</li><li class="flex gap-2"><span class="text-gold-light">✓</span> Fully custom design</li><li class="flex gap-2"><span class="text-gold-light">✓</span> Advanced animations</li><li class="flex gap-2"><span class="text-gold-light">✓</span> SEO foundations</li><li class="flex gap-2"><span class="text-gold-light">✓</span> Google Business integration</li><li class="flex gap-2"><span class="text-gold-light">✓</span> Booking/contact integration</li><li class="flex gap-2"><span class="text-gold-light">✓</span> 2 revision rounds</li></ul><button onclick="goToPage('contact')" class="btn-gold w-full py-3.5 rounded-full">Get Started</button></div>
+        <div class="glass rounded-3xl p-10 glow-card reveal d3 flex flex-col"><h3 class="font-serif text-2xl mb-2">Premium</h3><p class="text-white/50 text-sm mb-6">Fully custom, feature-rich builds for serious growth.</p><div class="text-4xl font-serif text-gold-grad mb-8">$1,000+</div><ul class="space-y-3 text-sm text-white/70 mb-10 flex-1"><li class="flex gap-2"><span class="text-gold-light">✓</span> Unlimited pages</li><li class="flex gap-2"><span class="text-gold-light">✓</span> Full custom design & motion</li><li class="flex gap-2"><span class="text-gold-light">✓</span> Advanced SEO strategy</li><li class="flex gap-2"><span class="text-gold-light">✓</span> Copywriting assistance</li><li class="flex gap-2"><span class="text-gold-light">✓</span> Conversion optimization</li><li class="flex gap-2"><span class="text-gold-light">✓</span> Ongoing maintenance option</li><li class="flex gap-2"><span class="text-gold-light">✓</span> 3 revision rounds</li></ul><button onclick="goToPage('contact')" class="btn-outline w-full py-3.5 rounded-full">Get Started</button></div>
+      </div>
+    </section>
+  </section>
+
+  <!-- ABOUT PAGE -->
+  <section id="page-about" class="page" style="display:none;">
+    <section class="pt-40 pb-24 max-w-7xl mx-auto px-6 lg:px-10">
+      <div class="grid lg:grid-cols-2 gap-16 items-center mb-28">
+        <div class="reveal-left in">
+          <span class="badge">About Apex</span>
+          <h1 class="text-4xl lg:text-6xl font-serif font-bold mt-4 mb-8 leading-tight">Built by Craftsmen, <span class="text-gold-grad">Not a Template Factory</span></h1>
+          <p class="text-white/60 leading-relaxed mb-5">Apex Web Developers was founded on a simple idea: local businesses deserve websites as premium as the businesses themselves. Too many small businesses are stuck with outdated, generic templates that don't reflect the quality of their work.</p>
+          <p class="text-white/60 leading-relaxed">We partner closely with salons, barbershops, restaurants, contractors, and auto businesses to build custom digital experiences that build trust instantly and turn browsers into paying customers.</p>
+        </div>
+        <div class="reveal-right relative">
+          <div class="glass-gold rounded-3xl p-10 float">
+            <div class="fade-line mb-8"></div>
+            <p class="font-serif text-2xl leading-relaxed">"Our mission is to make every local business look like a market leader online."</p>
+            <div class="mt-8 flex items-center gap-4"><div class="w-12 h-12 rounded-full bg-gradient-to-br from-gold-light to-gold flex items-center justify-center font-serif text-ink font-bold">A</div><div><div class="font-medium">Apex Founding Team</div><div class="text-xs text-white/50">Web Design & Strategy</div></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </section>
+
+  <!-- CONTACT PAGE -->
+  <section id="page-contact" class="page" style="display:none;">
+    <section class="pt-40 pb-24 max-w-7xl mx-auto px-6 lg:px-10">
+      <div class="text-center max-w-2xl mx-auto mb-16 reveal in">
+        <span class="badge">Get In Touch</span>
+        <h1 class="text-4xl lg:text-6xl font-serif font-bold mt-4">Let's Build Something <span class="text-gold-grad">Exceptional.</span></h1>
+        <p class="text-white/50 mt-5">Tell us about your business and we'll get back to you within 24 hours.</p>
+      </div>
+      <div class="grid lg:grid-cols-5 gap-10">
+        <div class="lg:col-span-3 glass rounded-3xl p-8 lg:p-10 reveal-left">
+          <form id="contactForm" class="space-y-5" onsubmit="submitForm(event)">
+            <div class="grid sm:grid-cols-2 gap-5">
+              <div><label class="text-xs text-white/50 uppercase tracking-widest mb-2 block">Name</label><input required type="text" class="w-full rounded-lg px-4 py-3 text-sm" placeholder="John Smith"></div>
+              <div><label class="text-xs text-white/50 uppercase tracking-widest mb-2 block">Business Name</label><input required type="text" class="w-full rounded-lg px-4 py-3 text-sm" placeholder="Smith's Barbershop"></div>
+            </div>
+            <div class="grid sm:grid-cols-2 gap-5">
+              <div><label class="text-xs text-white/50 uppercase tracking-widest mb-2 block">Email</label><input required type="email" class="w-full rounded-lg px-4 py-3 text-sm" placeholder="you@business.com"></div>
+              <div><label class="text-xs text-white/50 uppercase tracking-widest mb-2 block">Phone</label><input required type="tel" class="w-full rounded-lg px-4 py-3 text-sm" placeholder="(555) 123-4567"></div>
+            </div>
+            <div class="grid sm:grid-cols-2 gap-5">
+              <div><label class="text-xs text-white/50 uppercase tracking-widest mb-2 block">Business Type</label><select class="w-full rounded-lg px-4 py-3 text-sm"><option>Salon / Spa</option><option>Barbershop</option><option>Restaurant</option><option>Contractor</option><option>Auto Business</option><option>Other Local Business</option></select></div>
+              <div><label class="text-xs text-white/50 uppercase tracking-widest mb-2 block">Budget</label><select class="w-full rounded-lg px-4 py-3 text-sm"><option>$600 – $800</option><option>$800 – $1,000</option><option>$1,000+</option><option>Not sure yet</option></select></div>
+            </div>
+            <div><label class="text-xs text-white/50 uppercase tracking-widest mb-2 block">What do you need?</label><textarea rows="4" class="w-full rounded-lg px-4 py-3 text-sm" placeholder="Tell us about your project..."></textarea></div>
+            <button type="submit" class="btn-gold w-full py-4 rounded-full font-medium mt-4">Send Message</button>
+            <div id="formSuccess" class="hidden text-center text-gold-light text-sm pt-4">✓ Thank you! We'll be in touch within 24 hours.</div>
+          </form>
+        </div>
+        <div class="lg:col-span-2 space-y-6 reveal-right">
+          <div class="glass-gold rounded-2xl p-8"><h3 class="font-serif text-xl mb-6">Contact Info</h3><div class="space-y-5 text-sm"><div class="flex gap-3 items-start"><span class="text-gold-light">✉</span><div><div class="text-white/50 text-xs uppercase tracking-widest">Email</div><div>hello@apexwebdevelopers.com</div></div></div><div class="flex gap-3 items-start"><span class="text-gold-light">☎</span><div><div class="text-white/50 text-xs uppercase tracking-widest">Phone</div><div>(555) 200-4488</div></div></div><div class="flex gap-3 items-start"><span class="text-gold-light">⚑</span><div><div class="text-white/50 text-xs uppercase tracking-widest">Availability</div><div>Remote — Serving businesses nationwide</div></div></div></div></div>
+          <div class="glass rounded-2xl p-8"><h4 class="font-serif text-lg mb-3">Response Time</h4><p class="text-white/50 text-sm">We respond to every inquiry within 24 hours, often much sooner.</p></div>
+        </div>
+      </div>
+    </section>
+  </section>
 </main>
 
 <!-- FOOTER -->
 <footer class="border-t border-white/10 relative z-10 bg-black/40">
   <div class="max-w-7xl mx-auto px-6 lg:px-10 py-16 grid md:grid-cols-4 gap-10">
-    <div>
-      <div class="text-2xl font-serif font-bold text-gold-grad mb-3">APEX</div>
-      <p class="text-white/40 text-sm leading-relaxed">Premium websites for local businesses that want to look — and perform — like industry leaders.</p>
-    </div>
-    <div>
-      <h4 class="text-sm uppercase tracking-widest text-white/50 mb-4">Navigate</h4>
-      <ul class="space-y-2 text-sm text-white/60">
-        <li><a href="#" onclick="goToPage('home'); return false;" class="hover:text-gold-light transition">Home</a></li>
-        <li><a href="#" onclick="goToPage('services'); return false;" class="hover:text-gold-light transition">Services</a></li>
-        <li><a href="#" onclick="goToPage('portfolio'); return false;" class="hover:text-gold-light transition">Portfolio</a></li>
-        <li><a href="#" onclick="goToPage('pricing'); return false;" class="hover:text-gold-light transition">Pricing</a></li>
-      </ul>
-    </div>
-    <div>
-      <h4 class="text-sm uppercase tracking-widest text-white/50 mb-4">Company</h4>
-      <ul class="space-y-2 text-sm text-white/60">
-        <li><a href="#" onclick="goToPage('about'); return false;" class="hover:text-gold-light transition">About</a></li>
-        <li><a href="#" onclick="goToPage('contact'); return false;" class="hover:text-gold-light transition">Contact</a></li>
-      </ul>
-    </div>
-    <div>
-      <h4 class="text-sm uppercase tracking-widest text-white/50 mb-4">Get Started</h4>
-      <p class="text-white/40 text-sm mb-4">Ready to elevate your business online?</p>
-      <button onclick="goToPage('contact')" class="btn-gold px-5 py-2.5 rounded-full text-sm">Get Your Website</button>
-    </div>
+    <div><div class="text-2xl font-serif font-bold text-gold-grad mb-3">APEX</div><p class="text-white/40 text-sm leading-relaxed">Premium websites for local businesses that want to look — and perform — like industry leaders.</p></div>
+    <div><h4 class="text-sm uppercase tracking-widest text-white/50 mb-4">Navigate</h4><ul class="space-y-2 text-sm text-white/60"><li><a href="#" onclick="goToPage('home');return false;" class="hover:text-gold-light transition">Home</a></li><li><a href="#" onclick="goToPage('services');return false;" class="hover:text-gold-light transition">Services</a></li><li><a href="#" onclick="goToPage('portfolio');return false;" class="hover:text-gold-light transition">Portfolio</a></li><li><a href="#" onclick="goToPage('pricing');return false;" class="hover:text-gold-light transition">Pricing</a></li></ul></div>
+    <div><h4 class="text-sm uppercase tracking-widest text-white/50 mb-4">Company</h4><ul class="space-y-2 text-sm text-white/60"><li><a href="#" onclick="goToPage('about');return false;" class="hover:text-gold-light transition">About</a></li><li><a href="#" onclick="goToPage('contact');return false;" class="hover:text-gold-light transition">Contact</a></li></ul></div>
+    <div><h4 class="text-sm uppercase tracking-widest text-white/50 mb-4">Get Started</h4><p class="text-white/40 text-sm mb-4">Ready to elevate your business online?</p><button onclick="goToPage('contact')" class="btn-gold px-5 py-2.5 rounded-full text-sm">Get Your Website</button></div>
   </div>
-  <div class="border-t border-white/10 py-6 text-center text-xs text-white/30">
-    © 2024 Apex Web Developers. All rights reserved.
-  </div>
+  <div class="border-t border-white/10 py-6 text-center text-xs text-white/30">© 2024 Apex Web Developers. All rights reserved.</div>
 </footer>
 
 <script>
-/* ---------------- Page Navigation ---------------- */
-function goToPage(id) {
+/* 3D APEX Text Background */
+let scene, camera, renderer, textMesh;
+function initThreeJS() {
+  const container = document.getElementById('three-container');
+  if (!container) return;
+  
+  renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  container.appendChild(renderer.domElement);
+  
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 1, 1000);
+  camera.position.z = 5;
+  
+  // Create 3D Text
+  const loader = new THREE.FontLoader();
+  // Use a built-in font or create simple geometry
+  const geometry = new THREE.PlaneGeometry(4, 1.2);
+  const material = new THREE.MeshPhongMaterial({ 
+    color: 0xcda349, 
+    shininess: 80, 
+    transparent: true, 
+    opacity: 0.75,
+    specular: 0xffffff
+  });
+  textMesh = new THREE.Mesh(geometry, material);
+  scene.add(textMesh);
+  
+  // Add subtle lighting
+  const light = new THREE.DirectionalLight(0xffffff, 1.2);
+  light.position.set(5, 5, 10);
+  scene.add(light);
+  scene.add(new THREE.AmbientLight(0x404040, 0.6));
+  
+  // Scroll interaction
+  let scrollY = 0;
+  window.addEventListener('scroll', () => { scrollY = window.scrollY * 0.003; });
+  
+  function animate() {
+    requestAnimationFrame(animate);
+    if (textMesh) {
+      textMesh.rotation.y = Math.sin(Date.now() * 0.0004) * 0.3 + scrollY * 0.8;
+      textMesh.rotation.x = Math.cos(Date.now() * 0.0003) * 0.15;
+      textMesh.position.y = Math.sin(Date.now() * 0.0005) * 0.1;
+    }
+    renderer.render(scene, camera);
+  }
+  animate();
+  
+  // Resize handler
+  window.addEventListener('resize', () => {
+    if (!container) return;
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    camera.aspect = container.clientWidth / container.clientHeight;
+    camera.updateProjectionMatrix();
+  });
+}
+window.onload = initThreeJS;
+
+/* Page Navigation */
+function goToPage(id){
   const current = document.querySelector('.page.active');
-  const target = document.getElementById('page-' + id);
-  if (!target || current === target) return;
+  const target = document.getElementById('page-'+id);
+  if(!target || current === target) return;
   current.classList.remove('active');
   setTimeout(() => {
-    current.style.display = 'none';
-    target.style.display = 'block';
+    current.style.display='none';
+    target.style.display='block';
     requestAnimationFrame(() => {
       target.classList.add('active');
-      window.scrollTo({ top: 0, behavior: 'instant' });
+      window.scrollTo({top:0, behavior:'instant'});
       checkReveals();
     });
   }, 380);
@@ -1151,48 +529,35 @@ function goToPage(id) {
     l.classList.toggle('active', l.dataset.page === id);
   });
 }
+function toggleMenu(){ document.getElementById('mobileMenu').classList.toggle('open'); }
 
-function toggleMenu() {
-  document.getElementById('mobileMenu').classList.toggle('open');
-}
-
-/* ---------------- Reveal on scroll ---------------- */
+/* Reveal on scroll */
 const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale');
 const observer = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      e.target.classList.add('in');
-    }
-  });
+  entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('in'); } });
 }, { threshold: 0.15 });
 revealEls.forEach(el => observer.observe(el));
-function checkReveals() {
+function checkReveals(){
   revealEls.forEach(el => {
     const r = el.getBoundingClientRect();
-    if (r.top < window.innerHeight * 0.9) {
-      el.classList.add('in');
-    }
+    if(r.top < window.innerHeight * 0.9){ el.classList.add('in'); }
   });
 }
 checkReveals();
 
-/* ---------------- Counters ---------------- */
+/* Counters */
 const counters = document.querySelectorAll('.counter');
 const counterObserver = new IntersectionObserver((entries) => {
   entries.forEach(e => {
-    if (e.isIntersecting && !e.target.dataset.done) {
+    if(e.isIntersecting && !e.target.dataset.done){
       e.target.dataset.done = 'true';
       const target = parseInt(e.target.dataset.target);
       let cur = 0;
-      const step = Math.max(1, Math.ceil(target / 60));
+      const step = Math.max(1, Math.ceil(target/60));
       const tick = () => {
         cur += step;
-        if (cur >= target) {
-          e.target.textContent = target;
-        } else {
-          e.target.textContent = cur;
-          requestAnimationFrame(tick);
-        }
+        if(cur >= target){ e.target.textContent = target; }
+        else { e.target.textContent = cur; requestAnimationFrame(tick); }
       };
       tick();
     }
@@ -1200,151 +565,85 @@ const counterObserver = new IntersectionObserver((entries) => {
 }, { threshold: 0.4 });
 counters.forEach(c => counterObserver.observe(c));
 
-/* ---------------- Floating blob follows scroll + mouse ---------------- */
-let mx = 0, my = 0, sy = 0;
+/* Floating blob */
+let mx=0, my=0, sy=0;
 const blob = document.getElementById('blob');
-window.addEventListener('mousemove', (e) => {
-  mx = e.clientX;
-  my = e.clientY;
-});
-window.addEventListener('scroll', () => {
-  sy = window.scrollY;
-});
-function animateBlob() {
-  const targetX = mx - 300 + Math.sin(sy * 0.002) * 80;
-  const targetY = my - 300 + Math.cos(sy * 0.0015) * 60;
-  blob.style.transform = 'translate3d(' + targetX + 'px, ' + targetY + 'px, 0)';
+window.addEventListener('mousemove', (e) => { mx = e.clientX; my = e.clientY; });
+window.addEventListener('scroll', () => { sy = window.scrollY; });
+function animateBlob(){
+  const targetX = mx - 300 + Math.sin(sy*0.002)*80;
+  const targetY = my - 300 + Math.cos(sy*0.0015)*60;
+  blob.style.transform = `translate3d(${targetX}px, ${targetY}px, 0)`;
   requestAnimationFrame(animateBlob);
 }
 animateBlob();
 
-/* ---------------- 3D Shape animation ---------------- */
-const shape3d = document.getElementById('shape3d');
-let shapeX = window.innerWidth / 2;
-let shapeY = window.innerHeight / 2;
-window.addEventListener('mousemove', (e) => {
-  shapeX = e.clientX;
-  shapeY = e.clientY;
-});
-function animateShape() {
-  const cx = window.innerWidth / 2;
-  const cy = window.innerHeight / 2;
-  const dx = (shapeX - cx) * 0.08;
-  const dy = (shapeY - cy) * 0.08;
-  shape3d.style.transform = 'translate(' + (cx - 180 + dx) + 'px, ' + (cy - 180 + dy) + 'px) rotate(' + (sy * 0.05) + 'deg)';
-  requestAnimationFrame(animateShape);
-}
-animateShape();
-
-/* ---------------- Custom cursor ---------------- */
+/* Custom cursor */
 const dot = document.getElementById('cursorDot');
 const ring = document.getElementById('cursorRing');
 window.addEventListener('mousemove', (e) => {
-  dot.style.left = e.clientX + 'px';
-  dot.style.top = e.clientY + 'px';
-  ring.style.left = e.clientX + 'px';
-  ring.style.top = e.clientY + 'px';
+  dot.style.left = e.clientX+'px'; dot.style.top = e.clientY+'px';
+  ring.style.left = e.clientX+'px'; ring.style.top = e.clientY+'px';
 });
 document.querySelectorAll('a, button, input, select, textarea').forEach(el => {
-  el.addEventListener('mouseenter', () => {
-    ring.style.width = '50px';
-    ring.style.height = '50px';
-    ring.style.borderColor = '#f0d78c';
-  });
-  el.addEventListener('mouseleave', () => {
-    ring.style.width = '32px';
-    ring.style.height = '32px';
-    ring.style.borderColor = 'rgba(205,163,73,0.5)';
-  });
+  el.addEventListener('mouseenter', () => { ring.style.width='50px'; ring.style.height='50px'; ring.style.borderColor='#f0d78c'; });
+  el.addEventListener('mouseleave', () => { ring.style.width='32px'; ring.style.height='32px'; ring.style.borderColor='rgba(205,163,73,0.5)'; });
 });
 
-/* ---------------- Navbar bg on scroll ---------------- */
+/* Navbar bg on scroll */
 const nav = document.getElementById('navbar');
 window.addEventListener('scroll', () => {
-  if (window.scrollY > 40) {
-    nav.classList.add('glass');
-  } else {
-    nav.classList.remove('glass');
-  }
+  if(window.scrollY > 40){ nav.classList.add('glass'); } else { nav.classList.remove('glass'); }
 });
 
-/* ---------------- Portfolio filter ---------------- */
-function filterPortfolio(cat, btn) {
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active-filter', 'bg-gold/10'));
+/* Portfolio filter */
+function filterPortfolio(cat, btn){
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active-filter','bg-gold/10'));
   btn.classList.add('active-filter');
   document.querySelectorAll('.portfolio-item').forEach(item => {
-    if (cat === 'all' || item.dataset.cat === cat) {
+    if(cat === 'all' || item.dataset.cat === cat){
       item.style.display = 'block';
       setTimeout(() => { item.classList.add('in'); }, 10);
-    } else {
-      item.style.display = 'none';
-    }
+    } else { item.style.display = 'none'; }
   });
 }
 
-/* ---------------- Testimonials ---------------- */
+/* Testimonials */
 const testimonials = [
-  { text: "Apex completely transformed how customers see our salon. Bookings went up almost overnight — the site looks like something a much bigger brand would pay ten times as much for.", name: "Maria T.", biz: "Luxe Hair Studio", stars: 5 },
-  { text: "They understood exactly what a barbershop needs. Clean, fast, and it makes us look established. Worth every dollar.", name: "Derek R.", biz: "The Fade Room", stars: 5 },
-  { text: "Our reservation requests doubled within the first month. The design perfectly captures the feel of our restaurant.", name: "Giulia M.", biz: "Bella Vista Ristorante", stars: 5 },
-  { text: "Professional from start to finish. The site builds instant trust with new customers before they even call us.", name: "James P.", biz: "Summit Contracting Co.", stars: 5 },
-  { text: "Best investment we've made in our shop. It looks premium, loads fast, and customers mention it constantly.", name: "Chris B.", biz: "Velocity Auto Detailing", stars: 5 }
+  { text: "Apex completely transformed how customers see our salon. Bookings went up almost overnight — the site looks like something a much bigger brand would pay ten times as much for.", name:"Maria T.", biz:"Luxe Hair Studio", stars:5 },
+  { text: "They understood exactly what a barbershop needs. Clean, fast, and it makes us look established. Worth every dollar.", name:"Derek R.", biz:"The Fade Room", stars:5 },
+  { text: "Our reservation requests doubled within the first month. The design perfectly captures the feel of our restaurant.", name:"Giulia M.", biz:"Bella Vista Ristorante", stars:5 },
+  { text: "Professional from start to finish. The site builds instant trust with new customers before they even call us.", name:"James P.", biz:"Summit Contracting Co.", stars:5 },
+  { text: "Best investment we've made in our shop. It looks premium, loads fast, and customers mention it constantly.", name:"Chris B.", biz:"Velocity Auto Detailing", stars:5 },
 ];
 let tIndex = 0;
 const track = document.getElementById('testimonialTrack');
 const dotsWrap = document.getElementById('testimonialDots');
-function renderTestimonial(i) {
+function renderTestimonial(i){
   const t = testimonials[i];
   track.style.opacity = 0;
   setTimeout(() => {
-    track.innerHTML = '<div class="text-gold-light text-lg mb-4">' + '★'.repeat(t.stars) + '</div>' +
-      '<p class="font-serif text-xl lg:text-2xl leading-relaxed mb-6 max-w-2xl">' + t.text + '</p>' +
-      '<div class="text-white/70 text-sm">' + t.name + ' <span class="text-white/40">— ' + t.biz + '</span></div>';
+    track.innerHTML = `<div class="text-gold-light text-lg mb-4">${'★'.repeat(t.stars)}</div><p class="font-serif text-xl lg:text-2xl leading-relaxed mb-6 max-w-2xl">"${t.text}"</p><div class="text-white/70 text-sm">${t.name} <span class="text-white/40">— ${t.biz}</span></div>`;
     track.style.opacity = 1;
   }, 250);
-  document.querySelectorAll('.tdot').forEach((d, idx) => d.classList.toggle('bg-gold', idx === i));
+  document.querySelectorAll('.tdot').forEach((d,idx) => d.classList.toggle('bg-gold', idx===i));
 }
-testimonials.forEach((t, idx) => {
+testimonials.forEach((t,idx) => {
   const d = document.createElement('button');
   d.className = 'tdot w-2.5 h-2.5 rounded-full bg-white/20 transition';
   d.onclick = () => { tIndex = idx; renderTestimonial(idx); };
   dotsWrap.appendChild(d);
 });
 renderTestimonial(0);
-setInterval(() => {
-  tIndex = (tIndex + 1) % testimonials.length;
-  renderTestimonial(tIndex);
-}, 6000);
+setInterval(() => { tIndex = (tIndex+1) % testimonials.length; renderTestimonial(tIndex); }, 6000);
 
-/* ---------------- FAQ ---------------- */
-const faqs = [
-  { q: "How long does a project take?", a: "Most Starter and Professional sites are delivered within 7–10 business days. Premium builds may take 2–3 weeks depending on scope." },
-  { q: "Do I need to provide content and photos?", a: "We can work with what you provide, or help source professional stock imagery and assist with copywriting for an added fee." },
-  { q: "Will my website work on mobile phones?", a: "Yes — every website we build is fully responsive and tested across mobile, tablet, and desktop devices." },
-  { q: "Do you offer ongoing support after launch?", a: "Yes, we offer optional monthly maintenance plans that include updates, backups, and priority support." },
-  { q: "What if I need changes after the site launches?", a: "Each package includes a set number of revision rounds during the build, and additional updates can be requested anytime afterward." }
-];
-const faqList = document.getElementById('faqList');
-faqs.forEach((f, i) => {
-  const item = document.createElement('div');
-  item.className = 'glass rounded-xl overflow-hidden reveal';
-  item.innerHTML = '<button class="w-full flex justify-between items-center text-left px-6 py-5" onclick="this.parentElement.classList.toggle(\'open\'); this.nextElementSibling.style.maxHeight = this.parentElement.classList.contains(\'open\') ? this.nextElementSibling.scrollHeight+\'px\' : \'0px\';">' +
-    '<span class="font-medium">' + f.q + '</span><span class="text-gold-light text-xl">+</span></button>' +
-    '<div class="px-6 text-white/50 text-sm overflow-hidden transition-all duration-400" style="max-height:0px;"><p class="pb-5">' + f.a + '</p></div>';
-  faqList.appendChild(item);
-  observer.observe(item);
-});
-
-/* ---------------- Contact form ---------------- */
-function submitForm(e) {
+/* Contact form */
+function submitForm(e){
   e.preventDefault();
   document.getElementById('formSuccess').classList.remove('hidden');
-  e.target.querySelectorAll('input, textarea, select').forEach(f => f.value = '');
-  setTimeout(() => {
-    document.getElementById('formSuccess').classList.add('hidden');
-  }, 6000);
+  e.target.querySelectorAll('input, textarea, select').forEach(f => f.value='');
+  setTimeout(() => { document.getElementById('formSuccess').classList.add('hidden'); }, 6000);
 }
 </script>
-
 </body>
 </html>
